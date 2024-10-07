@@ -28,3 +28,15 @@ jobs:
 
       - name: Run checks
         run: deno task ok
+
+      - name: Run tests
+        run: deno task test
+
+      - name: Generate lcov
+        run: deno task lcov
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: matrix.os == 'ubuntu-latest' && matrix.deno == 'v1.x'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
