@@ -1,0 +1,43 @@
+{
+  "tasks": {
+    "ok": "deno task fmt && deno task lint && deno task check",
+    "check": "deno check **/*.ts",
+    "fmt": "deno fmt --check",
+    "lint": "deno lint",
+    "test": "deno test --doc --coverage=cov_profile --clean",
+    "test:watch": "deno test --watch",
+    "report": "deno task test && deno coverage --exclude=tests cov_profile --html && open cov_profile/html/index.html",
+    "lcov": "deno coverage --exclude=tests cov_profile --lcov --output=cov_profile.lcov"
+  },
+  "lock": false,
+  "imports": {
+    "@rayven/app": "https://github.com/jonnydgreen/api-framework/mod.ts",
+    "@std/assert": "jsr:@std/assert@^1.0.2",
+    "@std/fmt": "jsr:@std/fmt@^1.0.0",
+    "@std/fs": "jsr:@std/fs@^1.0.1",
+    "@std/http": "jsr:@std/http@^1.0.2",
+    "@std/log": "jsr:@std/log@^0.224.5",
+    "@std/path": "jsr:@std/path@^1.0.2",
+    "@std/semver": "jsr:@std/semver@^1.0.1"
+  },
+  "compilerOptions": {
+    "strict": true,
+    "useUnknownInCatchVariables": true,
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true
+  },
+  "exclude": [
+    ".git",
+    "cov_profile"
+  ],
+  "lint": {
+    "rules": {
+      "include": [
+        "camelcase",
+        "no-sync-fn-in-async-fn",
+        "single-var-declarator",
+        "verbatim-module-syntax"
+      ]
+    }
+  }
+}
