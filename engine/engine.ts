@@ -47,7 +47,7 @@ export class Engine {
     }));
 
     const schema = definition?.requestBody?.content
-      ?.["application/json"]["schema"];
+      ?.["application/json"]?.["schema"];
 
     if (schema) {
       parameters?.push({

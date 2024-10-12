@@ -14,7 +14,7 @@ export type DefResponse = {
   operationId: string;
   responses: { [key: string]: Response };
   parameters?: Parameter[];
-  requestBody?: { required: boolean; content: any };
+  requestBody?: { required: boolean; content: Record<string, Schema> };
 };
 
 export type Spec = {
@@ -60,5 +60,6 @@ type Schema = {
         } | string;
       };
     };
+    $ref?: string;
   };
 };
