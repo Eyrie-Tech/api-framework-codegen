@@ -1,0 +1,3 @@
+ls:
+  .ts: snake_case
+  .dir: snake_case

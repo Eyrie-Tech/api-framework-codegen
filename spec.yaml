@@ -1,0 +1,216 @@
+openapi: 3.0.0
+info:
+  title: Notification Service API
+  version: 1.0.0
+  description: API for managing notifications in the QuickFire system
+
+paths:
+  /notification-definitions:
+    get:
+      operationId: GetNotificationDefinitions
+      summary: List all notification definitions
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:    
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationDefinition'
+    post:
+      operationId: CreateNotificationDefinition
+      summary: Create a new notification definition
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationDefinition'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationDefinition'
+
+  /notification-definitions/{id}:
+    get:
+      operationId: GetNotificationDefinition
+      summary: Get a specific notification definition
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationDefinition'
+    put:
+      operationId: UpdateNotificationDefinition
+      summary: Update a notification definition
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationDefinition'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationDefinition'
+    delete:
+      operationId: DeleteNotificationDefinition
+      summary: Delete a notification definition
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successful deletion
+
+components:
+  schemas:
+    NotificationDefinition:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        channels:
+          type: array
+          items:
+            type: string
+            enum: [SMS, Email]
+        frequency:
+          type: string
+          enum: [DAILY, WEEKLY, IMMEDIATE]
+        eventTimeStartWindow:
+          type: string
+          format: date-time
+        eventTimeEndWindow:
+          type: string
+          format: date-time
+        eventDays:
+          type: array
+          items:
+            type: string
+            enum: [MON, TUE, WED, THU, FRI, SAT, SUN]
+        lastSent:
+          type: string
+          format: date-time
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationDefinitionGroup'
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationDefinitionUser'
+        propertyTags:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationDefinitionPropertyTag'
+        eventTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationDefinitionEventType'
+        properties:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationDefinitionProperty'
+
+    NotificationDefinitionGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        groupId:
+          type: string
+
+    NotificationDefinitionUser:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+
+    NotificationDefinitionPropertyTag:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        propertyTag:
+          type: string
+
+    NotificationDefinitionEventType:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        eventTypeId:
+          type: string
+
+    NotificationDefinitionProperty:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        propertyId:
+          type: string
+
+    ScheduledNotification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        notificationId:
+          type: string
+          format: uuid
+        hash:
+          type: string
+        contents:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduledNotificationContent'
+
+    ScheduledNotificationContent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        content:
+          type: string
+        scheduledNotificationId:
+          type: string
+          format: uuid
