@@ -2,7 +2,7 @@
 
 <!-- TODO: fix-up/add more badges -->
 
-[![codecov](https://codecov.io/gh/jonnydgreen/api-framework-codegen/branch/main/graph/badge.svg)](https://codecov.io/gh/jonnydgreen/api-framework-codegen)
+[![codecov](https://codecov.io/gh/jonnydgreen/api-framework-codegen/graph/badge.svg?token=HDUMM3Z8ZZ)](https://codecov.io/gh/jonnydgreen/api-framework-codegen)
 [![ci](https://github.com/jonnydgreen/api-framework-codegen/actions/workflows/ci.yml/badge.svg)](https://github.com/jonnydgreen/api-framework-codegen/actions/workflows/ci.yml)
 
 <!-- TODO: add description -->
