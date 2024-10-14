@@ -3,11 +3,13 @@
     "ok": "deno task fmt && deno task lint && deno task check",
     "check": "deno check **/*.ts",
     "fmt": "deno fmt --check",
-    "lint": "deno lint",
+    "lint:naming": "deno -A npm:@ls-lint/ls-lint",
+    "lint": "deno lint && deno task lint:naming",
     "test": "deno test --doc --coverage=cov_profile --clean",
     "test:watch": "deno test --watch",
     "report": "deno task test && deno coverage --exclude=tests cov_profile --html && open cov_profile/html/index.html",
-    "lcov": "deno coverage --exclude=tests cov_profile --lcov --output=cov_profile.lcov"
+    "lcov": "deno coverage --exclude=tests cov_profile --lcov --output=cov_profile.lcov",
+    "type:gen": "deno -A npm:json-schema-to-typescript --input schemas/model.json --output types/model.d.ts"
   },
   "lock": false,
   "imports": {
@@ -29,7 +31,8 @@
   },
   "exclude": [
     ".git",
-    "cov_profile"
+    "cov_profile",
+    "scratch"
   ],
   "lint": {
     "rules": {

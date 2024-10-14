@@ -1,12 +1,16 @@
-import { Engine } from "./engine/engine.ts";
-import { parse } from "npm:yaml";
 import { resolve } from "@std/path";
-import type { Spec } from "./types.ts";
-
-const engine = new Engine();
+import { parse } from "npm:yaml";
+import { ModelParser } from "./parsers/model/model_parser.ts";
+import type { OpenAPIV3 } from "npm:openapi-types";
+import { ModelStore } from "./stores/model/model.ts";
 
 const file = Deno.readTextFileSync(resolve("spec.yaml"));
 
-const fileJson: Spec = parse(file.toString());
+const fileJson: OpenAPIV3.Document = parse(file.toString());
 
-await engine.process(fileJson);
+const modelStore = new ModelStore();
+const modelParser = new ModelParser(modelStore);
+
+modelParser.parse(fileJson);
+
+modelStore.get().forEach((model) => console.log(model));

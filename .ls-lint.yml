@@ -1,3 +1,10 @@
 ls:
   .ts: snake_case
   .dir: snake_case
+  .d.ts: pointcase
+
+ignore:
+  - .git
+  - .githooks
+  - .github
+  - .vscode
