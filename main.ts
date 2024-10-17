@@ -5,6 +5,7 @@ import type { OpenAPIV3 } from "npm:openapi-types";
 import { ModelStore } from "./stores/model/model.ts";
 import { ControllerStore } from "./stores/controller/controller.ts";
 import { ControllerParser } from "./parsers/controller/controller_parser.ts";
+import { inspect } from "node:util";
 
 const file = Deno.readTextFileSync(resolve("spec.yaml"));
 
@@ -21,4 +22,4 @@ controllerParser.parse(fileJson);
 
 const [models, controllers] = [modelStore.get(), controllerStore.get()];
 
-console.log({ models, controllers });
+console.log(inspect(models, { depth: 100, colors: true }));

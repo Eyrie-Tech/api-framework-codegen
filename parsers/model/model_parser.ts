@@ -30,11 +30,12 @@ export class ModelParser extends Parser {
         throw new Error("Schema not found");
       }
 
-      const compiledModel = this.#compileModel(componentSchema);
+      const compiledModel = this.#compileModel(componentSchema, schema);
 
       const performValidation = this.#validate(compiledModel);
 
       if (!performValidation && this.#validate.errors) {
+        console.error(this.#validate.errors);
         throw new Error("Schema validation failed");
       }
 
@@ -43,19 +44,55 @@ export class ModelParser extends Parser {
   }
 
   #compileModel(
-    _schema: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject,
+    schema: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject,
+    modelName: string,
   ): Model {
-    // Do something with schema
+    const fields: Model["fields"] = [];
+
+    if ("$ref" in schema) {
+      return {} as Model;
+    } else {
+      if (schema.type === "object" && schema.properties) {
+        for (const [key, value] of Object.entries(schema.properties)) {
+          if ("items" in value) {
+            if ("$ref" in value.items) {
+              const ref = value.items.$ref.split("/").pop();
+              fields.push({
+                name: key,
+                type: `${value.type}(${ref})`,
+                nullable: value.nullable || true,
+                description: value.description || "",
+                format: value.format,
+              });
+            }
+
+            if ("enum" in value.items) {
+              fields.push({
+                name: key,
+                type: "enum",
+                enumValues: value.items.enum,
+                nullable: value.nullable || true,
+                description: value.description || "",
+                format: value.format,
+              });
+            }
+          } else if ("type" in value) {
+            fields.push({
+              name: key,
+              type: value.enum ? "enum" : value.type || "",
+              nullable: value.nullable || true,
+              description: value.description || "",
+              format: value.format,
+            });
+          }
+        }
+      }
+    }
+
     return {
-      name: "Test",
-      description: "Test description",
-      fields: [{
-        description: "Test Field",
-        format: "date-time",
-        type: "string",
-        name: "createdAt",
-        nullable: false,
-      }],
+      name: modelName,
+      fields,
+      description: "",
     };
   }
 }

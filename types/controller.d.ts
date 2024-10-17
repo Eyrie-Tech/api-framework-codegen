@@ -8,7 +8,7 @@
 export interface Controller {
   name: string;
   description: string;
-  imports?: {
+  imports: {
     path: string;
   }[];
 }

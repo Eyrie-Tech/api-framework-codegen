@@ -32,6 +32,9 @@
           },
           "description": {
             "type": "string"
+          },
+          "enumValues": {
+            "type": "array"
           }
         },
         "required": [
