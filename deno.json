@@ -9,7 +9,9 @@
     "test:watch": "deno test --watch",
     "report": "deno task test && deno coverage --exclude=tests cov_profile --html && open cov_profile/html/index.html",
     "lcov": "deno coverage --exclude=tests cov_profile --lcov --output=cov_profile.lcov",
-    "type:gen": "deno -A npm:json-schema-to-typescript --input schemas/model.json --output types/model.d.ts"
+    "gen:model": "deno -A npm:json-schema-to-typescript --input schemas/model.json -o types/model.d.ts",
+    "gen:controller": "deno -A npm:json-schema-to-typescript --input schemas/controller.json -o types/controller.d.ts",
+    "type:gen": "deno task gen:model && deno task gen:controller"
   },
   "lock": false,
   "imports": {

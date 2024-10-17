@@ -1,0 +1,38 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "examples": [
+        "NotificationDefinitionController"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "examples": [
+        "NotificationDefinitionController"
+      ]
+    },
+    "imports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "imports"
+  ],
+  "additionalProperties": false
+}
