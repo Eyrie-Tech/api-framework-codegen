@@ -1,5 +1,5 @@
 import { pascalCase } from "https://deno.land/x/case@2.2.0/mod.ts";
-import { singular } from "https://deno.land/x/deno_plural/mod.ts";
+import { singular } from "https://deno.land/x/deno_plural@2.0.0/mod.ts";
 import { Ajv, type ValidateFunction } from "npm:ajv";
 import type { OpenAPIV3 } from "npm:openapi-types";
 import controllerSchema from "../../schemas/controller.json" with {
@@ -10,14 +10,14 @@ import type { Controller } from "../../types/controller.d.ts";
 import { Parser } from "../parser.ts";
 
 export class ControllerParser extends Parser {
-  private ajv: Ajv = new Ajv();
-  private validate: ValidateFunction<OpenAPIV3.Document>;
-  private controllerStore: ControllerStore;
+  #ajv: Ajv = new Ajv();
+  #validate: ValidateFunction<OpenAPIV3.Document>;
+  #controllerStore: ControllerStore;
 
   constructor(controllerStore: ControllerStore) {
     super();
-    this.validate = this.ajv.compile(controllerSchema);
-    this.controllerStore = controllerStore;
+    this.#validate = this.#ajv.compile(controllerSchema);
+    this.#controllerStore = controllerStore;
   }
 
   public parse(file: OpenAPIV3.Document): void {
@@ -38,7 +38,7 @@ export class ControllerParser extends Parser {
       singular(this.extractControllerName(path)),
     );
 
-    if (this.controllerStore.has(controllerName)) {
+    if (this.#controllerStore.has(controllerName)) {
       return this.mergeWithExistingController(controllerName, functions);
     } else {
       return this.createNewController(controllerName, functions);
@@ -129,7 +129,7 @@ export class ControllerParser extends Parser {
     controllerName: string,
     newFunctions: Controller["functions"],
   ): Controller {
-    const existingController = this.controllerStore.get(controllerName)!;
+    const existingController = this.#controllerStore.get(controllerName)!;
     return {
       ...existingController,
       functions: [
@@ -154,11 +154,11 @@ export class ControllerParser extends Parser {
   }
 
   private validateAndStoreController(controller: Controller): void {
-    if (!this.validate(controller)) {
+    if (!this.#validate(controller)) {
       throw new Error(
         `Schema validation failed for controller: ${controller.name}`,
       );
     }
-    this.controllerStore.set(controller);
+    this.#controllerStore.set(controller);
   }
 }
