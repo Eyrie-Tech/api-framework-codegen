@@ -11,4 +11,14 @@ export interface Controller {
   imports: {
     path: string;
   }[];
+  functions: {
+    type?: string;
+    name?: string;
+    arguments?: {
+      body?: unknown[];
+      params?: unknown[];
+    };
+    url?: string;
+    contentType?: string;
+  }[];
 }

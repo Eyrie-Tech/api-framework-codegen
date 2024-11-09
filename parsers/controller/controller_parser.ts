@@ -1,59 +1,164 @@
+import { pascalCase } from "https://deno.land/x/case@2.2.0/mod.ts";
+import { singular } from "https://deno.land/x/deno_plural/mod.ts";
 import { Ajv, type ValidateFunction } from "npm:ajv";
 import type { OpenAPIV3 } from "npm:openapi-types";
-import type { Controller } from "../../types/controller.d.ts";
-import controller from "../../schemas/controller.json" with { type: "json" };
+import controllerSchema from "../../schemas/controller.json" with {
+  type: "json",
+};
 import type { ControllerStore } from "../../stores/controller/controller.ts";
+import type { Controller } from "../../types/controller.d.ts";
 import { Parser } from "../parser.ts";
 
-/**
- * The Parsers job is to sanitise and construct OpenAPI specs ready for ingestion by a Generator
- * {@link https://github.com/jonnydgreen/api-framework-codegen/docs/designs/parser.excalidraw.png Design}
- */
 export class ControllerParser extends Parser {
-  #ajv: Ajv = new Ajv();
-  #validate: ValidateFunction<OpenAPIV3.Document>;
-  #controllerStore: ControllerStore;
+  private ajv: Ajv = new Ajv();
+  private validate: ValidateFunction<OpenAPIV3.Document>;
+  private controllerStore: ControllerStore;
 
   constructor(controllerStore: ControllerStore) {
     super();
-    this.#validate = this.#ajv.compile(controller);
-    this.#controllerStore = controllerStore;
+    this.validate = this.ajv.compile(controllerSchema);
+    this.controllerStore = controllerStore;
   }
 
-  public parse(
-    file: OpenAPIV3.Document<Record<string | number | symbol, never>>,
-  ): void {
-    for (const schema in file.components?.schemas) {
-      const componentSchema = file.components.schemas[schema];
-
-      if (!componentSchema) {
-        throw new Error("Schema not found");
+  public parse(file: OpenAPIV3.Document): void {
+    Object.entries(file.paths).forEach(([path, pathItem]) => {
+      if (pathItem) {
+        const controller = this.compileController(pathItem, path);
+        this.validateAndStoreController(controller);
       }
+    });
+  }
 
-      const compiledController = this.#compileController(componentSchema);
+  private compileController(
+    pathItem: OpenAPIV3.PathItemObject,
+    path: string,
+  ): Controller {
+    const functions = this.compileFunctions(pathItem, path);
+    const controllerName = pascalCase(
+      singular(this.extractControllerName(path)),
+    );
 
-      const performValidation = this.#validate(compiledController);
-
-      if (!performValidation && this.#validate.errors) {
-        throw new Error("Schema validation failed");
-      }
-
-      this.#controllerStore.set(compiledController);
+    if (this.controllerStore.has(controllerName)) {
+      return this.mergeWithExistingController(controllerName, functions);
+    } else {
+      return this.createNewController(controllerName, functions);
     }
   }
 
-  #compileController(
-    _schema: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject,
+  private compileFunctions(
+    pathItem: OpenAPIV3.PathItemObject,
+    path: string,
+  ): Controller["functions"] {
+    return Object.entries(pathItem)
+      .filter(([method]) =>
+        ["get", "post", "put", "delete", "patch"].includes(method)
+      )
+      .map(([method, operation]) => {
+        if (typeof operation === "object" && "operationId" in operation) {
+          return {
+            type: method,
+            name: "operationId" in operation ? operation.operationId : "",
+            arguments: this.generateArguments(operation),
+            url: path,
+            contentType: this.extractContentType(operation.responses),
+          };
+        }
+
+        return {};
+      });
+  }
+
+  private generateArguments(
+    operation: OpenAPIV3.OperationObject,
+  ): {
+    params?: unknown[];
+    body?: { name?: string | undefined; type?: string | undefined }[];
+  } {
+    const args: {
+      params?: unknown[];
+      body?: { name?: string | undefined; type?: string | undefined }[];
+    } = {};
+
+    if (operation.parameters) {
+      args.params = operation.parameters.map((parameter) => {
+        if ("name" in parameter) {
+          // deno-lint-ignore no-unused-vars
+          const { schema, ...rest } = parameter;
+          return rest;
+        }
+      });
+    }
+
+    if (operation.requestBody) {
+      const content =
+        (operation.requestBody as OpenAPIV3.RequestBodyObject).content;
+      const contentType = Object.keys(content)[0];
+      if (contentType && content?.[contentType]) {
+        const schema = content[contentType].schema as OpenAPIV3.ReferenceObject;
+        if (schema.$ref) {
+          args.body = [{
+            name: schema.$ref.split("/").pop(),
+            type: `${schema.$ref.split("/").pop()}Model`,
+          }];
+        }
+      }
+    }
+
+    return args;
+  }
+
+  private extractContentType(
+    responses?: OpenAPIV3.ResponsesObject,
+  ): string | undefined {
+    if (!responses) return undefined;
+    const successResponse = responses["200"] || responses["201"];
+    if (
+      successResponse && "content" in successResponse &&
+      successResponse?.content
+    ) {
+      return Object.keys(successResponse.content)[0];
+    }
+    return undefined;
+  }
+
+  private extractControllerName(path: string): string {
+    return path.split("/")[1] || "";
+  }
+
+  private mergeWithExistingController(
+    controllerName: string,
+    newFunctions: Controller["functions"],
   ): Controller {
-    // Do something with schema
+    const existingController = this.controllerStore.get(controllerName)!;
     return {
-      name: "Test",
-      description: "Test description",
-      imports: [{
-        path: "/service_a",
-      }, {
-        path: "service_b",
-      }],
+      ...existingController,
+      functions: [
+        ...(existingController.functions),
+        ...newFunctions,
+      ],
     };
+  }
+
+  private createNewController(
+    controllerName: string,
+    functions: Controller["functions"],
+  ): Controller {
+    return {
+      name: controllerName,
+      description: "",
+      functions,
+      imports: [{
+        path: `@/services/${pascalCase(singular(controllerName))}Service`,
+      }, { path: `@/models/${pascalCase(singular(controllerName))}Model` }],
+    };
+  }
+
+  private validateAndStoreController(controller: Controller): void {
+    if (!this.validate(controller)) {
+      throw new Error(
+        `Schema validation failed for controller: ${controller.name}`,
+      );
+    }
+    this.controllerStore.set(controller);
   }
 }

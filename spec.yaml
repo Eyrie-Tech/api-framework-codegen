@@ -86,6 +86,8 @@ paths:
       responses:
         '204':
           description: Successful deletion
+          content:
+            application/json:
 
 components:
   schemas:

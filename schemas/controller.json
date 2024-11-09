@@ -27,12 +27,46 @@
         ],
         "additionalProperties": false
       }
+    },
+    "functions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "arguments": {
+            "type": "object",
+            "properties": {
+              "body": {
+                "type": "array"
+              },
+              "params": {
+                "type": "array"
+              }
+            },
+            "additionalProperties": false
+          },
+          "url": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
     }
   },
   "required": [
     "name",
     "description",
-    "imports"
+    "imports",
+    "functions"
   ],
   "additionalProperties": false
 }

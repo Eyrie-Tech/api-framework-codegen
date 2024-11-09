@@ -20,6 +20,6 @@ const controllerParser = new ControllerParser(controllerStore);
 modelParser.parse(fileJson);
 controllerParser.parse(fileJson);
 
-const [models, controllers] = [modelStore.get(), controllerStore.get()];
+const [_models, controllers] = [modelStore.list(), controllerStore.list()];
 
-console.log(inspect(models, { depth: 100, colors: true }));
+console.log(inspect(controllers, { depth: 100, colors: true }));
