@@ -8,6 +8,7 @@ import { ControllerParser } from "./parsers/controller/controller_parser.ts";
 import { inspect } from "node:util";
 import { ServiceStore } from "./stores/service/service.ts";
 import { ServiceParser } from "./parsers/service/service_parser.ts";
+import { Engine } from "./scratch/engine/engine.ts";
 
 const file = Deno.readTextFileSync(resolve("spec.yaml"));
 
@@ -31,15 +32,5 @@ const [models, controllers, services] = [
   serviceStore.list(),
 ];
 
-console.log(
-  "Controllers:",
-  inspect(controllers.values(), { depth: 100, colors: true }),
-);
-console.log(
-  "Services:",
-  inspect(services.values(), { depth: 100, colors: true }),
-);
-console.log(
-  "Models:",
-  inspect(models.values(), { depth: 100, colors: true }),
-);
+const engine = new Engine();
+engine.process();

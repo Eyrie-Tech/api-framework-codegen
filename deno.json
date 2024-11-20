@@ -34,8 +34,7 @@
   },
   "exclude": [
     ".git",
-    "cov_profile",
-    "scratch"
+    "cov_profile"
   ],
   "lint": {
     "rules": {
