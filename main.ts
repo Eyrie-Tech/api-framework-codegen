@@ -1,14 +1,13 @@
 import { resolve } from "@std/path";
-import { parse } from "npm:yaml";
-import { ModelParser } from "./parsers/model/model_parser.ts";
 import type { OpenAPIV3 } from "npm:openapi-types";
-import { ModelStore } from "./stores/model/model.ts";
-import { ControllerStore } from "./stores/controller/controller.ts";
+import { parse } from "npm:yaml";
 import { ControllerParser } from "./parsers/controller/controller_parser.ts";
-import { inspect } from "node:util";
-import { ServiceStore } from "./stores/service/service.ts";
+import { ModelParser } from "./parsers/model/model_parser.ts";
 import { ServiceParser } from "./parsers/service/service_parser.ts";
 import { Engine } from "./scratch/engine/engine.ts";
+import { ControllerStore } from "./stores/controller/controller.ts";
+import { ModelStore } from "./stores/model/model.ts";
+import { ServiceStore } from "./stores/service/service.ts";
 
 const file = Deno.readTextFileSync(resolve("spec.yaml"));
 
@@ -33,4 +32,5 @@ const [models, controllers, services] = [
 ];
 
 const engine = new Engine();
-engine.process();
+
+await engine.process(models, controllers, services);

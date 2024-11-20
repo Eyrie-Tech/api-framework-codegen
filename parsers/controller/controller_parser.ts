@@ -65,14 +65,17 @@ export class ControllerParser extends Parser {
         }
 
         return {};
-      });
+      }) as Controller["functions"];
   }
 
   private generateArguments(
     operation: OpenAPIV3.OperationObject,
   ): {
     params?: unknown[];
-    body?: { name?: string | undefined; type?: string | undefined }[];
+    body?: {
+      name?: string | undefined;
+      type?: string | undefined;
+    }[];
   } {
     const args: {
       params?: unknown[];
@@ -93,7 +96,7 @@ export class ControllerParser extends Parser {
       const content =
         (operation.requestBody as OpenAPIV3.RequestBodyObject).content;
       const contentType = Object.keys(content)[0];
-      if (contentType && content?.[contentType]) {
+      if (contentType && content[contentType]) {
         const schema = content[contentType].schema as OpenAPIV3.ReferenceObject;
         if (schema.$ref) {
           args.body = [{
@@ -149,7 +152,11 @@ export class ControllerParser extends Parser {
       functions,
       imports: [{
         path: `@/services/${pascalCase(singular(controllerName))}Service`,
-      }, { path: `@/models/${pascalCase(singular(controllerName))}Model` }],
+        name: `${pascalCase(singular(controllerName))}Service`,
+      }, {
+        path: `@/models/${pascalCase(singular(controllerName))}Model`,
+        name: `${pascalCase(singular(controllerName))}Model`,
+      }],
     };
   }
 
@@ -157,6 +164,7 @@ export class ControllerParser extends Parser {
     if (!this.#validate(controller)) {
       throw new Error(
         `Schema validation failed for controller: ${controller.name}`,
+        { cause: this.#validate.errors },
       );
     }
     this.#controllerStore.set(controller);

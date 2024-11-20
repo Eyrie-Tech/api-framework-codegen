@@ -6,8 +6,8 @@ import serviceSchema from "../../schemas/service.json" with {
   type: "json",
 };
 import type { ServiceStore } from "../../stores/service/service.ts";
-import { Parser } from "../parser.ts";
 import type { Service } from "../../types/service.d.ts";
+import { Parser } from "../parser.ts";
 
 export class ServiceParser extends Parser {
   #ajv: Ajv = new Ajv();
@@ -65,7 +65,7 @@ export class ServiceParser extends Parser {
         }
 
         return {};
-      });
+      }) as Service["functions"];
   }
 
   private generateArguments(

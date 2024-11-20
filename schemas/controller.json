@@ -18,12 +18,16 @@
       "items": {
         "type": "object",
         "properties": {
+          "name": {
+            "type": "string"
+          },
           "path": {
             "type": "string"
           }
         },
         "required": [
-          "path"
+          "path",
+          "name"
         ],
         "additionalProperties": false
       }
@@ -46,7 +50,25 @@
                 "type": "array"
               },
               "params": {
-                "type": "array"
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "in": {
+                      "type": "string"
+                    },
+                    "required": {
+                      "type": "boolean"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                }
               }
             },
             "additionalProperties": false
@@ -58,6 +80,11 @@
             "type": "string"
           }
         },
+        "required": [
+          "type",
+          "name",
+          "url"
+        ],
         "additionalProperties": false
       }
     }

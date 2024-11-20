@@ -9,16 +9,21 @@ export interface Controller {
   name: string;
   description: string;
   imports: {
+    name: string;
     path: string;
   }[];
   functions: {
-    type?: string;
-    name?: string;
+    type: string;
+    name: string;
     arguments?: {
       body?: unknown[];
-      params?: unknown[];
+      params?: {
+        in?: string;
+        required?: boolean;
+        name: string;
+      }[];
     };
-    url?: string;
+    url: string;
     contentType?: string;
   }[];
 }

@@ -17,6 +17,9 @@
   "lock": false,
   "imports": {
     "@rayven/app": "https://github.com/jonnydgreen/api-framework/mod.ts",
+    "@/services/": "./lib/services/",
+    "@/models/": "./lib/models/",
+    "@/controllers/": "./lib/controllers/",
     "@std/assert": "jsr:@std/assert@^1.0.2",
     "@std/fmt": "jsr:@std/fmt@^1.0.0",
     "@std/fs": "jsr:@std/fs@^1.0.1",
