@@ -5,7 +5,7 @@ import type { Service } from "../../types/service.d.ts";
 
 export abstract class Builder {
   public abstract build(
-    controller: Controller | Service | Model,
+    resource: Controller | Service | Model,
   ): Promise<void>;
 
   protected buildFunctionParameters(
