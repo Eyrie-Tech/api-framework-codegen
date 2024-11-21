@@ -12,7 +12,8 @@
     "gen:model": "deno -A npm:json-schema-to-typescript --input schemas/model.json -o types/model.d.ts",
     "gen:controller": "deno -A npm:json-schema-to-typescript --input schemas/controller.json -o types/controller.d.ts",
     "gen:service": "deno -A npm:json-schema-to-typescript --input schemas/service.json -o types/service.d.ts",
-    "type:gen": "deno task gen:model && deno task gen:controller"
+    "type:gen": "deno task gen:model && deno task gen:service && deno task gen:controller",
+    "parse": "deno run -A main.ts"
   },
   "lock": false,
   "imports": {

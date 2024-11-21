@@ -101,7 +101,7 @@ export class ControllerParser extends Parser {
         if (schema.$ref) {
           args.body = [{
             name: schema.$ref.split("/").pop(),
-            type: `${schema.$ref.split("/").pop()}Model`,
+            type: `${schema.$ref.split("/").pop()}`,
           }];
         }
       }
@@ -154,8 +154,8 @@ export class ControllerParser extends Parser {
         path: `@/services/${pascalCase(singular(controllerName))}Service`,
         name: `${pascalCase(singular(controllerName))}Service`,
       }, {
-        path: `@/models/${pascalCase(singular(controllerName))}Model`,
-        name: `${pascalCase(singular(controllerName))}Model`,
+        path: `@/models/${pascalCase(singular(controllerName))}`,
+        name: `${pascalCase(singular(controllerName))}`,
       }],
     };
   }

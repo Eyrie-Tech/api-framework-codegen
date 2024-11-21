@@ -98,7 +98,7 @@ export class ServiceParser extends Parser {
         if (schema.$ref) {
           args.body = [{
             name: schema.$ref.split("/").pop(),
-            type: `${schema.$ref.split("/").pop()}Model`,
+            type: `${schema.$ref.split("/").pop()}`,
           }];
         }
       }
@@ -148,7 +148,7 @@ export class ServiceParser extends Parser {
       description: "",
       functions,
       imports: [{
-        path: `@/models/${pascalCase(singular(serviceName))}Model`,
+        path: `@/models/${pascalCase(singular(serviceName))}`,
       }],
     };
   }
@@ -157,6 +157,7 @@ export class ServiceParser extends Parser {
     if (!this.#validate(service)) {
       throw new Error(
         `Schema validation failed for service: ${service.name}`,
+        { cause: this.#validate.errors },
       );
     }
     this.#serviceStore.set(service);

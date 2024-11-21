@@ -14,6 +14,11 @@ export interface Model {
     nullable: boolean;
     format?: string;
     description: string;
-    enumValues?: unknown[];
+    enumValues?: string;
+    ref?: string;
+  }[];
+  imports: {
+    name: string;
+    path: string;
   }[];
 }

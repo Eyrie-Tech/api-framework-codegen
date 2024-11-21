@@ -10,14 +10,14 @@ paths:
       operationId: GetNotificationDefinitions
       summary: List all notification definitions
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
-            application/json:    
+            application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/NotificationDefinition'
+                  $ref: "#/components/schemas/NotificationDefinition"
     post:
       operationId: CreateNotificationDefinition
       summary: Create a new notification definition
@@ -26,14 +26,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NotificationDefinition'
+              $ref: "#/components/schemas/NotificationDefinition"
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NotificationDefinition'
+                $ref: "#/components/schemas/NotificationDefinition"
 
   /notification-definitions/{id}:
     get:
@@ -46,12 +46,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NotificationDefinition'
+                $ref: "#/components/schemas/NotificationDefinition"
     put:
       operationId: UpdateNotificationDefinition
       summary: Update a notification definition
@@ -66,14 +66,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NotificationDefinition'
+              $ref: "#/components/schemas/NotificationDefinition"
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NotificationDefinition'
+                $ref: "#/components/schemas/NotificationDefinition"
     delete:
       operationId: DeleteNotificationDefinition
       summary: Delete a notification definition
@@ -84,7 +84,7 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        "204":
           description: Successful deletion
           content:
             application/json:
@@ -126,23 +126,23 @@ components:
         groups:
           type: array
           items:
-            $ref: '#/components/schemas/NotificationDefinitionGroup'
+            $ref: "#/components/schemas/NotificationDefinitionGroup"
         users:
           type: array
           items:
-            $ref: '#/components/schemas/NotificationDefinitionUser'
+            $ref: "#/components/schemas/NotificationDefinitionUser"
         propertyTags:
           type: array
           items:
-            $ref: '#/components/schemas/NotificationDefinitionPropertyTag'
+            $ref: "#/components/schemas/NotificationDefinitionPropertyTag"
         eventTypes:
           type: array
           items:
-            $ref: '#/components/schemas/NotificationDefinitionEventType'
+            $ref: "#/components/schemas/NotificationDefinitionEventType"
         properties:
           type: array
           items:
-            $ref: '#/components/schemas/NotificationDefinitionProperty'
+            $ref: "#/components/schemas/NotificationDefinitionProperty"
 
     NotificationDefinitionGroup:
       type: object
@@ -203,7 +203,7 @@ components:
         contents:
           type: array
           items:
-            $ref: '#/components/schemas/ScheduledNotificationContent'
+            $ref: "#/components/schemas/ScheduledNotificationContent"
 
     ScheduledNotificationContent:
       type: object
