@@ -9,11 +9,21 @@ export abstract class Builder {
   ): Promise<void>;
 
   protected buildFunctionParameters(
-    arg?: { params?: { name: string }[] },
+    arg?: {
+      params?: { name: string }[];
+      body?: { name: string; type: string }[];
+    },
   ): OptionalKind<ParameterDeclarationStructure>[] {
-    return arg?.params?.map((param) => ({
-      name: param.name,
-      type: "string",
+    if (arg?.params) {
+      return arg?.params?.map((param) => ({
+        name: param.name,
+        type: "string",
+      })) ?? [];
+    }
+
+    return arg?.body?.map((body) => ({
+      name: body.name,
+      type: body.type,
     })) ?? [];
   }
 

@@ -15,11 +15,15 @@ export interface Service {
     type: string;
     name: string;
     arguments?: {
-      body?: unknown[];
+      body?: {
+        name: string;
+        type: string;
+      }[];
       params?: {
         in?: string;
         required?: boolean;
         name: string;
+        [k: string]: unknown;
       }[];
     };
     url: string;

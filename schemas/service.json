@@ -43,7 +43,23 @@
             "type": "object",
             "properties": {
               "body": {
-                "type": "array"
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "type"
+                  ],
+                  "additionalProperties": false
+                }
               },
               "params": {
                 "type": "array",
@@ -62,8 +78,7 @@
                   },
                   "required": [
                     "name"
-                  ],
-                  "additionalProperties": false
+                  ]
                 }
               }
             },
