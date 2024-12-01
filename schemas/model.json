@@ -38,6 +38,9 @@
           },
           "ref": {
             "type": "string"
+          },
+          "topLevel": {
+            "type": "boolean"
           }
         },
         "required": [

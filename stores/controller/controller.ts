@@ -1,5 +1,8 @@
 import type { Controller } from "../../types/controller.d.ts";
 
+/**
+ * Stores all controller defintions
+ */
 export class ControllerStore {
   #controllers: Map<string, Controller> = new Map();
 

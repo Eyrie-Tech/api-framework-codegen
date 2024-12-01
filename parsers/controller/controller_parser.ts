@@ -8,7 +8,12 @@ import controllerSchema from "../../schemas/controller.json" with {
 import type { ControllerStore } from "../../stores/controller/controller.ts";
 import type { Controller } from "../../types/controller.d.ts";
 import { Parser } from "../parser.ts";
+import camelCase from "https://deno.land/x/case@2.2.0/camelCase.ts";
+import { NameBuilder } from "../../utils/name_builder.ts";
 
+/**
+ * The parser that outputs a controller definition to be used by the controller builder
+ */
 export class ControllerParser extends Parser {
   #ajv: Ajv = new Ajv();
   #validate: ValidateFunction<OpenAPIV3.Document>;
@@ -20,32 +25,37 @@ export class ControllerParser extends Parser {
     this.#controllerStore = controllerStore;
   }
 
+  /**
+   * Used to parse a provided OpenAPI spec and set the final outputs in the controller store
+   *
+   * @param file Represents the resolved OpenAPI spec
+   */
   public parse(file: OpenAPIV3.Document): void {
     Object.entries(file.paths).forEach(([path, pathItem]) => {
       if (pathItem) {
-        const controller = this.compileController(pathItem, path);
-        this.validateAndStoreController(controller);
+        const controller = this.#compileController(pathItem, path);
+        this.#validateAndStoreController(controller);
       }
     });
   }
 
-  private compileController(
+  #compileController(
     pathItem: OpenAPIV3.PathItemObject,
     path: string,
   ): Controller {
-    const functions = this.compileFunctions(pathItem, path);
+    const functions = this.#compileFunctions(pathItem, path);
     const controllerName = pascalCase(
-      singular(this.extractControllerName(path)),
+      singular(this.#extractControllerName(path)),
     );
 
     if (this.#controllerStore.has(controllerName)) {
-      return this.mergeWithExistingController(controllerName, functions);
+      return this.#mergeWithExistingController(controllerName, functions);
     } else {
-      return this.createNewController(controllerName, functions);
+      return this.#createNewController(controllerName, functions);
     }
   }
 
-  private compileFunctions(
+  #compileFunctions(
     pathItem: OpenAPIV3.PathItemObject,
     path: string,
   ): Controller["functions"] {
@@ -58,9 +68,9 @@ export class ControllerParser extends Parser {
           return {
             type: method,
             name: "operationId" in operation ? operation.operationId : "",
-            arguments: this.generateArguments(operation),
+            arguments: this.#generateArguments(operation),
             url: path,
-            contentType: this.extractContentType(operation.responses),
+            contentType: this.#extractContentType(operation.responses),
           };
         }
 
@@ -68,7 +78,7 @@ export class ControllerParser extends Parser {
       }) as Controller["functions"];
   }
 
-  private generateArguments(
+  #generateArguments(
     operation: OpenAPIV3.OperationObject,
   ): {
     params?: unknown[];
@@ -85,9 +95,11 @@ export class ControllerParser extends Parser {
     if (operation.parameters) {
       args.params = operation.parameters.map((parameter) => {
         if ("name" in parameter) {
-          // deno-lint-ignore no-unused-vars
-          const { schema, ...rest } = parameter;
-          return rest;
+          return {
+            in: parameter.in,
+            name: camelCase(singular(parameter.name)),
+            required: parameter.required,
+          };
         }
       });
     }
@@ -100,7 +112,9 @@ export class ControllerParser extends Parser {
         const schema = content[contentType].schema as OpenAPIV3.ReferenceObject;
         if (schema.$ref) {
           args.body = [{
-            name: schema.$ref.split("/").pop(),
+            name: camelCase(
+              singular(schema.$ref.split("/").pop()?.toString() ?? ""),
+            ),
             type: `${schema.$ref.split("/").pop()}`,
           }];
         }
@@ -110,7 +124,7 @@ export class ControllerParser extends Parser {
     return args;
   }
 
-  private extractContentType(
+  #extractContentType(
     responses?: OpenAPIV3.ResponsesObject,
   ): string | undefined {
     if (!responses) return undefined;
@@ -124,17 +138,21 @@ export class ControllerParser extends Parser {
     return undefined;
   }
 
-  private extractControllerName(path: string): string {
+  #extractControllerName(path: string): string {
     return path.split("/")[1] || "";
   }
 
-  private mergeWithExistingController(
+  #mergeWithExistingController(
     controllerName: string,
     newFunctions: Controller["functions"],
   ): Controller {
     const existingController = this.#controllerStore.get(controllerName)!;
     return {
       ...existingController,
+      imports: this.#generateImports(
+        existingController.functions,
+        controllerName,
+      ),
       functions: [
         ...(existingController.functions),
         ...newFunctions,
@@ -142,7 +160,7 @@ export class ControllerParser extends Parser {
     };
   }
 
-  private createNewController(
+  #createNewController(
     controllerName: string,
     functions: Controller["functions"],
   ): Controller {
@@ -150,17 +168,56 @@ export class ControllerParser extends Parser {
       name: controllerName,
       description: "",
       functions,
-      imports: [{
-        path: `@/services/${pascalCase(singular(controllerName))}Service`,
-        name: `${pascalCase(singular(controllerName))}Service`,
-      }, {
-        path: `@/models/${pascalCase(singular(controllerName))}`,
-        name: `${pascalCase(singular(controllerName))}`,
-      }],
+      imports: this.#generateImports(functions, controllerName),
     };
   }
 
-  private validateAndStoreController(controller: Controller): void {
+  #generateImports(
+    controllerFunctions: Controller["functions"],
+    controllerName: string,
+  ): Controller["imports"] {
+    const allControllerImports =
+      controllerFunctions.flatMap((controllerFunction) => {
+        return controllerFunction.arguments?.body?.map((controllerBody) => ({
+          path: `@/models/${pascalCase(singular(controllerBody.name))}`,
+          name: `${pascalCase(singular(controllerBody.name))}`,
+        })) || [];
+      }) || [];
+
+    return allControllerImports.reduce(
+      (controllerImports: Controller["imports"], currentImport) => {
+        if (
+          controllerImports.find((controllerImport) =>
+            controllerImport.name === currentImport.name
+          )
+        ) {
+          return controllerImports;
+        } else {
+          controllerImports.push({
+            path: `@/models/${pascalCase(singular(currentImport.name))}`,
+            name: `${pascalCase(singular(currentImport.name))}`,
+          });
+        }
+        return [...controllerImports, {
+          name: NameBuilder({
+            name: controllerName,
+            kind: "className",
+            type: "Service",
+          }),
+          path: `@/services/${
+            pascalCase(singular(NameBuilder({
+              kind: "className",
+              name: controllerName,
+              type: "Service",
+            })))
+          }`,
+        }];
+      },
+      [],
+    );
+  }
+
+  #validateAndStoreController(controller: Controller): void {
     if (!this.#validate(controller)) {
       throw new Error(
         `Schema validation failed for controller: ${controller.name}`,

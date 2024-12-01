@@ -1,4 +1,4 @@
-import { pascalCase } from "https://deno.land/x/case@2.2.0/mod.ts";
+import { camelCase, pascalCase } from "https://deno.land/x/case@2.2.0/mod.ts";
 import { singular } from "https://deno.land/x/deno_plural@2.0.0/mod.ts";
 import { Ajv, type ValidateFunction } from "npm:ajv";
 import type { OpenAPIV3 } from "npm:openapi-types";
@@ -9,6 +9,9 @@ import type { ServiceStore } from "../../stores/service/service.ts";
 import type { Service } from "../../types/service.d.ts";
 import { Parser } from "../parser.ts";
 
+/**
+ * The parser that outputs a service definition to be used by the service builder
+ */
 export class ServiceParser extends Parser {
   #ajv: Ajv = new Ajv();
   #validate: ValidateFunction<OpenAPIV3.Document>;
@@ -20,32 +23,37 @@ export class ServiceParser extends Parser {
     this.#serviceStore = serviceStore;
   }
 
+  /**
+   * Used to parse a provided OpenAPI spec and set the final outputs in the service store
+   *
+   * @param file Represents the resolved OpenAPI spec
+   */
   public parse(file: OpenAPIV3.Document): void {
     Object.entries(file.paths).forEach(([path, pathItem]) => {
       if (pathItem) {
-        const service = this.compileService(pathItem, path);
-        this.validateAndStoreService(service);
+        const service = this.#compileService(pathItem, path);
+        this.#validateAndStoreService(service);
       }
     });
   }
 
-  private compileService(
+  #compileService(
     pathItem: OpenAPIV3.PathItemObject,
     path: string,
   ): Service {
-    const functions = this.compileFunctions(pathItem, path);
+    const functions = this.#compileFunctions(pathItem, path);
     const serviceName = pascalCase(
-      singular(this.extractServiceName(path)),
+      singular(this.#extractServiceName(path)),
     );
 
     if (this.#serviceStore.has(serviceName)) {
-      return this.mergeWithExistingService(serviceName, functions);
+      return this.#mergeWithExistingService(serviceName, functions);
     } else {
-      return this.createNewService(serviceName, functions);
+      return this.#createNewService(serviceName, functions);
     }
   }
 
-  private compileFunctions(
+  #compileFunctions(
     pathItem: OpenAPIV3.PathItemObject,
     path: string,
   ): Service["functions"] {
@@ -58,9 +66,9 @@ export class ServiceParser extends Parser {
           return {
             type: method,
             name: "operationId" in operation ? operation.operationId : "",
-            arguments: this.generateArguments(operation),
+            arguments: this.#generateArguments(operation),
             url: path,
-            contentType: this.extractContentType(operation.responses),
+            contentType: this.#extractContentType(operation.responses),
           };
         }
 
@@ -68,7 +76,7 @@ export class ServiceParser extends Parser {
       }) as Service["functions"];
   }
 
-  private generateArguments(
+  #generateArguments(
     operation: OpenAPIV3.OperationObject,
   ): {
     params?: unknown[];
@@ -82,9 +90,11 @@ export class ServiceParser extends Parser {
     if (operation.parameters) {
       args.params = operation.parameters.map((parameter) => {
         if ("name" in parameter) {
-          // deno-lint-ignore no-unused-vars
-          const { schema, ...rest } = parameter;
-          return rest;
+          return {
+            in: parameter.in,
+            name: camelCase(singular(parameter.name)),
+            required: parameter.required,
+          };
         }
       });
     }
@@ -97,7 +107,9 @@ export class ServiceParser extends Parser {
         const schema = content[contentType].schema as OpenAPIV3.ReferenceObject;
         if (schema.$ref) {
           args.body = [{
-            name: schema.$ref.split("/").pop(),
+            name: camelCase(
+              singular(schema.$ref.split("/").pop()?.toString() ?? ""),
+            ),
             type: `${schema.$ref.split("/").pop()}`,
           }];
         }
@@ -107,7 +119,7 @@ export class ServiceParser extends Parser {
     return args;
   }
 
-  private extractContentType(
+  #extractContentType(
     responses?: OpenAPIV3.ResponsesObject,
   ): string | undefined {
     if (!responses) return undefined;
@@ -121,17 +133,18 @@ export class ServiceParser extends Parser {
     return undefined;
   }
 
-  private extractServiceName(path: string): string {
+  #extractServiceName(path: string): string {
     return path.split("/")[1] || "";
   }
 
-  private mergeWithExistingService(
+  #mergeWithExistingService(
     serviceName: string,
     newFunctions: Service["functions"],
   ): Service {
     const existingService = this.#serviceStore.get(serviceName)!;
     return {
       ...existingService,
+      imports: this.#generateImports(existingService.functions),
       functions: [
         ...(existingService.functions),
         ...newFunctions,
@@ -139,7 +152,7 @@ export class ServiceParser extends Parser {
     };
   }
 
-  private createNewService(
+  #createNewService(
     serviceName: string,
     functions: Service["functions"],
   ): Service {
@@ -147,13 +160,39 @@ export class ServiceParser extends Parser {
       name: serviceName,
       description: "",
       functions,
-      imports: [{
-        path: `@/models/${pascalCase(singular(serviceName))}`,
-      }],
+      imports: this.#generateImports(functions),
     };
   }
 
-  private validateAndStoreService(service: Service): void {
+  #generateImports(serviceFunctions: Service["functions"]): Service["imports"] {
+    const allServiceImports = serviceFunctions.flatMap((serviceFunction) => {
+      return serviceFunction.arguments?.body?.map((serviceBody) => ({
+        path: `@/models/${pascalCase(singular(serviceBody.name))}`,
+        name: `${pascalCase(singular(serviceBody.name))}`,
+      })) || [];
+    }) || [];
+
+    return allServiceImports.reduce(
+      (serviceImports: Service["imports"], currentImport) => {
+        if (
+          serviceImports.find((serviceImport) =>
+            serviceImport.name === currentImport.name
+          )
+        ) {
+          return serviceImports;
+        } else {
+          serviceImports.push({
+            path: `@/models/${pascalCase(singular(currentImport.name))}`,
+            name: `${pascalCase(singular(currentImport.name))}`,
+          });
+        }
+        return serviceImports;
+      },
+      [],
+    );
+  }
+
+  #validateAndStoreService(service: Service): void {
     if (!this.#validate(service)) {
       throw new Error(
         `Schema validation failed for service: ${service.name}`,

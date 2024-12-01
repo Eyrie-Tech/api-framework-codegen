@@ -1,10 +1,12 @@
 import type { Project } from "npm:ts-morph";
 import type { Controller } from "../../../types/controller.d.ts";
-import { ClassNameBuilder } from "../../../utils/classNameBuilder.ts";
-import { ExtensionBuilder } from "../../../utils/extensionBuilder.ts";
+import { NameBuilder } from "../../../utils/name_builder.ts";
 import { Builder } from "../builder.ts";
 
-export class ControllerBuilder extends Builder implements Builder {
+/**
+ * The controller builder handles generating controller definitions based off a parsed OpenAPI spec
+ */
+export class ControllerBuilder extends Builder {
   #project: Project;
 
   constructor(project: Project) {
@@ -12,10 +14,18 @@ export class ControllerBuilder extends Builder implements Builder {
     this.#project = project;
   }
 
+  /**
+   * @param controller A defined controller definition used for the final generation
+   */
   public async build(controller: Controller) {
     const sourceFile = this.#project.createSourceFile(
       `lib/controllers/${
-        ExtensionBuilder(controller.name, "Controller", "ts")
+        NameBuilder({
+          name: controller.name,
+          type: "Controller",
+          extension: "ts",
+          kind: "extension",
+        })
       }`,
       "",
       { overwrite: true },
@@ -31,7 +41,11 @@ export class ControllerBuilder extends Builder implements Builder {
 
     sourceFile.addClass({
       isExported: true,
-      name: ClassNameBuilder(controller.name, "Controller"),
+      name: NameBuilder({
+        name: controller.name,
+        type: "Controller",
+        kind: "className",
+      }),
       ctors: [{
         parameters: this.buildConstructorParameters(controller.imports),
       }],

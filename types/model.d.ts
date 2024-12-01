@@ -16,6 +16,7 @@ export interface Model {
     description: string;
     enumValues?: string;
     ref?: string;
+    topLevel?: boolean;
   }[];
   imports: {
     name: string;

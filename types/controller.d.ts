@@ -24,7 +24,6 @@ export interface Controller {
         in?: string;
         required?: boolean;
         name: string;
-        [k: string]: unknown;
       }[];
     };
     url: string;

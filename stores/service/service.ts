@@ -1,5 +1,8 @@
 import type { Service } from "../../types/service.d.ts";
 
+/**
+ * Stores all servic defintions
+ */
 export class ServiceStore {
   #services: Map<string, Service> = new Map();
 

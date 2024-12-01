@@ -1,5 +1,8 @@
 import type { Model } from "../../types/model.d.ts";
 
+/**
+ * Stores all model defintions
+ */
 export class ModelStore {
   #models: Map<string, Model> = new Map();
 

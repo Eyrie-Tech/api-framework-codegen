@@ -1,10 +1,12 @@
 import type { Project } from "npm:ts-morph";
 import type { Model } from "../../../types/model.d.ts";
-import { ClassNameBuilder } from "../../../utils/classNameBuilder.ts";
-import { ExtensionBuilder } from "../../../utils/extensionBuilder.ts";
+import { NameBuilder } from "../../../utils/name_builder.ts";
 import { Builder } from "../builder.ts";
 
-export class ModelBuilder extends Builder implements Builder {
+/**
+ * The model builder handles generating model definitions based off a parsed OpenAPI spec
+ */
+export class ModelBuilder extends Builder {
   #project: Project;
 
   constructor(project: Project) {
@@ -12,9 +14,19 @@ export class ModelBuilder extends Builder implements Builder {
     this.#project = project;
   }
 
+  /**
+   * @param model A defined model definition used for the final generation
+   */
   public async build(model: Model) {
     const sourceFile = this.#project.createSourceFile(
-      `lib/models/${ExtensionBuilder(model.name, undefined, "ts")}`,
+      `lib/models/${
+        NameBuilder({
+          name: model.name,
+          type: undefined,
+          extension: "ts",
+          kind: "extension",
+        })
+      }`,
       "",
       { overwrite: true },
     );
@@ -27,7 +39,10 @@ export class ModelBuilder extends Builder implements Builder {
 
     sourceFile.addInterface({
       isExported: true,
-      name: ClassNameBuilder(model.name),
+      name: NameBuilder({
+        name: model.name,
+        kind: "className",
+      }),
       properties: model.fields.map((prop) => ({
         name: prop.name,
         type: prop.type,

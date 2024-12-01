@@ -15,10 +15,11 @@ type BaseField = {
   format?: string | undefined;
   enumValues?: string | undefined;
   ref?: string | undefined;
+  topLevel?: boolean | undefined;
 };
+
 /**
- * The Parsers job is to sanitise and construct OpenAPI specs ready for ingestion by a Generator
- * {@link https://github.com/jonnydgreen/api-framework-codegen/docs/designs/parser.excalidraw.png Design}
+ * The parser that outputs model definitions to be used by the model builder
  */
 export class ModelParser extends Parser {
   readonly #ajv: Ajv;
@@ -32,33 +33,20 @@ export class ModelParser extends Parser {
     this.#modelStore = modelStore;
   }
 
+  /**
+   * Used to parse a provided OpenAPI spec and set the final outputs in the model store
+   *
+   * @param file Represents the resolved OpenAPI spec
+   */
   public parse(file: OpenAPIV3.Document): void {
     if (!file.components?.schemas) {
       throw new Error("No schemas found in OpenAPI document");
     }
 
     Object.entries(file.components.schemas).forEach(([schemaName, schema]) => {
-      this.#processSchema(schemaName, schema);
+      const model = this.#compileModel(schema, schemaName);
+      this.#validateAndStoreModel(model);
     });
-  }
-
-  #processSchema(
-    schemaName: string,
-    schema: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject,
-  ): void {
-    const compiledModel = this.#compileModel(schema, schemaName);
-    this.#validateModel(compiledModel);
-    this.#modelStore.set(compiledModel);
-  }
-
-  #validateModel(model: Model): void {
-    const isValid = this.#validate(model);
-    if (!isValid) {
-      throw new Error(
-        `Schema validation failed for model ${model.name}`,
-        { cause: this.#validate.errors },
-      );
-    }
   }
 
   #compileModel(
@@ -80,10 +68,20 @@ export class ModelParser extends Parser {
   }
 
   #generateImports(baseField: BaseField[]): Model["imports"] {
-    return baseField.filter((value) => value.ref).map((value) => ({
-      path: `@/models/${pascalCase(singular(value.ref || ""))}`,
-      name: `${pascalCase(singular(value.ref || ""))}`,
-    }));
+    return baseField.filter((value) => value.ref || value.topLevel).map((
+      value,
+    ) => {
+      if (value.topLevel) {
+        return {
+          path: `@/models/${pascalCase(singular(value.name || ""))}`,
+          name: `${pascalCase(singular(value.type || ""))}`,
+        };
+      }
+      return {
+        path: `@/models/${pascalCase(singular(value.ref || ""))}`,
+        name: `${pascalCase(singular(value.ref || ""))}`,
+      };
+    });
   }
 
   #compileFields(schema: OpenAPIV3.SchemaObject): Model["fields"] {
@@ -114,7 +112,17 @@ export class ModelParser extends Parser {
         name: key,
         nullable: value.nullable ?? false,
         description: value.description ?? "",
-        format: value.format as string,
+        format: value.format,
+      };
+    }
+
+    if ("$ref" in value) {
+      const ref = value.$ref.split("/").pop();
+      return {
+        ...baseField,
+        name: key,
+        type: `${ref}`,
+        topLevel: true,
       };
     }
 
@@ -135,7 +143,7 @@ export class ModelParser extends Parser {
     if ("type" in value) {
       return {
         ...baseField,
-        type: value.type || "",
+        type: this.#handleType(value.type) || "",
       };
     }
 
@@ -143,6 +151,13 @@ export class ModelParser extends Parser {
       ...baseField,
       type: "",
     };
+  }
+
+  #handleType(type?: string | undefined) {
+    const typeMap: { [key: string]: string } = {
+      integer: "number",
+    };
+    return type && typeMap[type] ? typeMap[type] : type;
   }
 
   #createArrayField(
@@ -156,6 +171,10 @@ export class ModelParser extends Parser {
         type: `${ref}[]`,
         ref,
       };
+    }
+
+    if ("type" in value.items) {
+      return { ...baseField, type: `${value.items.type}[]` };
     }
 
     if ("enum" in value.items) {
@@ -179,5 +198,15 @@ export class ModelParser extends Parser {
     obj: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject,
   ) {
     return "$ref" in obj;
+  }
+
+  #validateAndStoreModel(model: Model): void {
+    if (!this.#validate(model)) {
+      throw new Error(
+        `Schema validation failed for model: ${model.name}`,
+        { cause: this.#validate.errors },
+      );
+    }
+    this.#modelStore.set(model);
   }
 }

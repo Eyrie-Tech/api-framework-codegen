@@ -10,6 +10,7 @@ export interface Service {
   description: string;
   imports: {
     path: string;
+    name: string;
   }[];
   functions: {
     type: string;
@@ -23,7 +24,6 @@ export interface Service {
         in?: string;
         required?: boolean;
         name: string;
-        [k: string]: unknown;
       }[];
     };
     url: string;

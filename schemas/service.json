@@ -20,10 +20,14 @@
         "properties": {
           "path": {
             "type": "string"
+          },
+          "name": {
+            "type": "string"
           }
         },
         "required": [
-          "path"
+          "path",
+          "name"
         ],
         "additionalProperties": false
       }
@@ -78,7 +82,8 @@
                   },
                   "required": [
                     "name"
-                  ]
+                  ],
+                  "additionalProperties": false
                 }
               }
             },
