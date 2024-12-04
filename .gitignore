@@ -2,3 +2,4 @@
 sandbox
 cov_profile
 *.lcov
+lib
