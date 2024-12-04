@@ -32,7 +32,7 @@
         "additionalProperties": false
       }
     },
-    "functions": {
+    "methods": {
       "type": "array",
       "items": {
         "type": "object",
@@ -43,7 +43,7 @@
           "name": {
             "type": "string"
           },
-          "arguments": {
+          "parameters": {
             "type": "object",
             "properties": {
               "body": {
@@ -109,7 +109,7 @@
     "name",
     "description",
     "imports",
-    "functions"
+    "methods"
   ],
   "additionalProperties": false
 }

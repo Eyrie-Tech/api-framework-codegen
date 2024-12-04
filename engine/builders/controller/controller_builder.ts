@@ -1,12 +1,12 @@
-import type { Project } from "npm:ts-morph";
+import type { Project } from "ts-morph";
 import type { Controller } from "../../../types/controller.d.ts";
 import { NameBuilder } from "../../../utils/name_builder.ts";
-import { Builder } from "../builder.ts";
+import { TSBuilder } from "../builder.ts";
 
 /**
  * The controller builder handles generating controller definitions based off a parsed OpenAPI spec
  */
-export class ControllerBuilder extends Builder {
+export class ControllerBuilder extends TSBuilder {
   #project: Project;
 
   constructor(project: Project) {
@@ -49,9 +49,9 @@ export class ControllerBuilder extends Builder {
       ctors: [{
         parameters: this.buildConstructorParameters(controller.imports),
       }],
-      methods: controller.functions.map((fn) => ({
-        name: fn.name || "",
-        parameters: this.buildFunctionParameters(fn.arguments),
+      methods: controller.methods.map((method) => ({
+        name: method.name || "",
+        parameters: this.buildMethodParameters(method.parameters),
       })),
     });
 

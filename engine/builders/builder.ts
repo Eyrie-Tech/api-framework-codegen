@@ -1,22 +1,18 @@
-import {
-  Decorator,
-  type OptionalKind,
-  type ParameterDeclarationStructure,
-} from "npm:ts-morph";
+import { toCamelCase } from "@std/text/to-camel-case";
+import type { OptionalKind, ParameterDeclarationStructure } from "ts-morph";
 import type { Controller } from "../../types/controller.d.ts";
 import type { Model } from "../../types/model.d.ts";
 import type { Service } from "../../types/service.d.ts";
-import camelCase from "https://deno.land/x/case@2.2.0/camelCase.ts";
 
 /**
  * A builder takes in a constructed OpenAPI spec definition and perform the final output of the project structure
  */
-export abstract class Builder {
+export abstract class TSBuilder {
   public abstract build(
     resource: Controller | Service | Model,
   ): Promise<void>;
 
-  protected buildFunctionParameters(
+  protected buildMethodParameters(
     arg?: {
       params?: { name: string }[];
       body?: { name: string; type: string }[];
@@ -41,7 +37,7 @@ export abstract class Builder {
     return classImports.filter((classImport) =>
       classImport.path.includes("@/services/")
     ).map((classImport) => ({
-      name: camelCase(classImport.name),
+      name: toCamelCase(classImport.name),
       type: classImport.name,
       isReadonly: true,
     }));

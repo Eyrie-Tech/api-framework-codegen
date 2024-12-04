@@ -1,12 +1,12 @@
-import type { Project } from "npm:ts-morph";
+import type { Project } from "ts-morph";
 import type { Service } from "../../../types/service.d.ts";
 import { NameBuilder } from "../../../utils/name_builder.ts";
-import { Builder } from "../builder.ts";
+import { TSBuilder } from "../builder.ts";
 
 /**
  * The service builder handles generating service definitions based off a parsed OpenAPI spec
  */
-export class ServiceBuilder extends Builder {
+export class ServiceBuilder extends TSBuilder {
   #project: Project;
 
   constructor(project: Project) {
@@ -38,9 +38,9 @@ export class ServiceBuilder extends Builder {
         type: "Service",
         kind: "className",
       }),
-      methods: service.functions.map((fn) => ({
-        name: fn.name,
-        parameters: this.buildFunctionParameters(fn.arguments),
+      methods: service.methods.map((method) => ({
+        name: method.name,
+        parameters: this.buildMethodParameters(method.parameters),
       })),
     });
 

@@ -1,6 +1,6 @@
 import { resolve } from "@std/path";
-import type { OpenAPIV3 } from "npm:openapi-types";
-import { parse } from "npm:yaml";
+import type { OpenAPIV3 } from "openapi-types";
+import { parse } from "jsr:@std/yaml";
 import { Engine } from "./engine/engine.ts";
 import { ControllerParser } from "./parsers/controller/controller_parser.ts";
 import { ModelParser } from "./parsers/model/model_parser.ts";
@@ -11,7 +11,7 @@ import { ServiceStore } from "./stores/service/service.ts";
 
 const file = Deno.readTextFileSync(resolve("spec.yaml"));
 
-const fileJson: OpenAPIV3.Document = parse(file.toString());
+const fileJson = parse(file.toString()) as OpenAPIV3.Document;
 
 const modelStore = new ModelStore();
 const controllerStore = new ControllerStore();

@@ -12,10 +12,10 @@ export interface Service {
     path: string;
     name: string;
   }[];
-  functions: {
+  methods: {
     type: string;
     name: string;
-    arguments?: {
+    parameters?: {
       body?: {
         name: string;
         type: string;

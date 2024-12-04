@@ -1,15 +1,15 @@
-import { pascalCase } from "https://deno.land/x/case@2.2.0/mod.ts";
+import { toCamelCase } from "@std/text/to-camel-case";
+import { toPascalCase } from "@std/text/to-pascal-case";
+import { Ajv, type ValidateFunction } from "ajv";
 import { singular } from "https://deno.land/x/deno_plural@2.0.0/mod.ts";
-import { Ajv, type ValidateFunction } from "npm:ajv";
-import type { OpenAPIV3 } from "npm:openapi-types";
+import type { OpenAPIV3 } from "openapi-types";
 import controllerSchema from "../../schemas/controller.json" with {
   type: "json",
 };
 import type { ControllerStore } from "../../stores/controller/controller.ts";
 import type { Controller } from "../../types/controller.d.ts";
-import { Parser } from "../parser.ts";
-import camelCase from "https://deno.land/x/case@2.2.0/camelCase.ts";
 import { NameBuilder } from "../../utils/name_builder.ts";
+import { Parser } from "../parser.ts";
 
 /**
  * The parser that outputs a controller definition to be used by the controller builder
@@ -43,22 +43,22 @@ export class ControllerParser extends Parser {
     pathItem: OpenAPIV3.PathItemObject,
     path: string,
   ): Controller {
-    const functions = this.#compileFunctions(pathItem, path);
-    const controllerName = pascalCase(
+    const methods = this.#compileMethods(pathItem, path);
+    const controllerName = toPascalCase(
       singular(this.#extractControllerName(path)),
     );
 
     if (this.#controllerStore.has(controllerName)) {
-      return this.#mergeWithExistingController(controllerName, functions);
-    } else {
-      return this.#createNewController(controllerName, functions);
+      return this.#mergeWithExistingController(controllerName, methods);
     }
+
+    return this.#createNewController(controllerName, methods);
   }
 
-  #compileFunctions(
+  #compileMethods(
     pathItem: OpenAPIV3.PathItemObject,
     path: string,
-  ): Controller["functions"] {
+  ): Controller["methods"] {
     return Object.entries(pathItem)
       .filter(([method]) =>
         ["get", "post", "put", "delete", "patch"].includes(method)
@@ -68,17 +68,17 @@ export class ControllerParser extends Parser {
           return {
             type: method,
             name: "operationId" in operation ? operation.operationId : "",
-            arguments: this.#generateArguments(operation),
+            parameters: this.#generateParameters(operation),
             url: path,
             contentType: this.#extractContentType(operation.responses),
           };
         }
 
         return {};
-      }) as Controller["functions"];
+      }) as Controller["methods"];
   }
 
-  #generateArguments(
+  #generateParameters(
     operation: OpenAPIV3.OperationObject,
   ): {
     params?: unknown[];
@@ -97,7 +97,7 @@ export class ControllerParser extends Parser {
         if ("name" in parameter) {
           return {
             in: parameter.in,
-            name: camelCase(singular(parameter.name)),
+            name: toCamelCase(singular(parameter.name)),
             required: parameter.required,
           };
         }
@@ -112,7 +112,7 @@ export class ControllerParser extends Parser {
         const schema = content[contentType].schema as OpenAPIV3.ReferenceObject;
         if (schema.$ref) {
           args.body = [{
-            name: camelCase(
+            name: toCamelCase(
               singular(schema.$ref.split("/").pop()?.toString() ?? ""),
             ),
             type: `${schema.$ref.split("/").pop()}`,
@@ -144,43 +144,43 @@ export class ControllerParser extends Parser {
 
   #mergeWithExistingController(
     controllerName: string,
-    newFunctions: Controller["functions"],
+    newMethods: Controller["methods"],
   ): Controller {
     const existingController = this.#controllerStore.get(controllerName)!;
     return {
       ...existingController,
       imports: this.#generateImports(
-        existingController.functions,
+        existingController.methods,
         controllerName,
       ),
-      functions: [
-        ...(existingController.functions),
-        ...newFunctions,
+      methods: [
+        ...(existingController.methods),
+        ...newMethods,
       ],
     };
   }
 
   #createNewController(
     controllerName: string,
-    functions: Controller["functions"],
+    methods: Controller["methods"],
   ): Controller {
     return {
       name: controllerName,
       description: "",
-      functions,
-      imports: this.#generateImports(functions, controllerName),
+      methods,
+      imports: this.#generateImports(methods, controllerName),
     };
   }
 
   #generateImports(
-    controllerFunctions: Controller["functions"],
+    controllerMethods: Controller["methods"],
     controllerName: string,
   ): Controller["imports"] {
     const allControllerImports =
-      controllerFunctions.flatMap((controllerFunction) => {
-        return controllerFunction.arguments?.body?.map((controllerBody) => ({
-          path: `@/models/${pascalCase(singular(controllerBody.name))}`,
-          name: `${pascalCase(singular(controllerBody.name))}`,
+      controllerMethods.flatMap((controllerMethod) => {
+        return controllerMethod.parameters?.body?.map((controllerBody) => ({
+          path: `@/models/${toPascalCase(singular(controllerBody.name))}`,
+          name: `${toPascalCase(singular(controllerBody.name))}`,
         })) || [];
       }) || [];
 
@@ -194,8 +194,8 @@ export class ControllerParser extends Parser {
           return controllerImports;
         } else {
           controllerImports.push({
-            path: `@/models/${pascalCase(singular(currentImport.name))}`,
-            name: `${pascalCase(singular(currentImport.name))}`,
+            path: `@/models/${toPascalCase(singular(currentImport.name))}`,
+            name: `${toPascalCase(singular(currentImport.name))}`,
           });
         }
         return [...controllerImports, {
@@ -205,7 +205,7 @@ export class ControllerParser extends Parser {
             type: "Service",
           }),
           path: `@/services/${
-            pascalCase(singular(NameBuilder({
+            toPascalCase(singular(NameBuilder({
               kind: "className",
               name: controllerName,
               type: "Service",

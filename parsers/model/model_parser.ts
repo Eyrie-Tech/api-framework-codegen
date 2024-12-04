@@ -1,10 +1,10 @@
-import { Ajv, type ValidateFunction } from "npm:ajv";
-import type { OpenAPIV3 } from "npm:openapi-types";
+import { Ajv, type ValidateFunction } from "ajv";
+import type { OpenAPIV3 } from "openapi-types";
 import type { Model } from "../../types/model.d.ts";
 import model from "../../schemas/model.json" with { type: "json" };
 import type { ModelStore } from "../../stores/model/model.ts";
 import { Parser } from "../parser.ts";
-import pascalCase from "https://deno.land/x/case@2.2.0/pascalCase.ts";
+import { toPascalCase } from "@std/text";
 import { singular } from "https://deno.land/x/deno_plural@2.0.0/mod.ts";
 
 type BaseField = {
@@ -73,13 +73,13 @@ export class ModelParser extends Parser {
     ) => {
       if (value.topLevel) {
         return {
-          path: `@/models/${pascalCase(singular(value.name || ""))}`,
-          name: `${pascalCase(singular(value.type || ""))}`,
+          path: `@/models/${toPascalCase(singular(value.name || ""))}`,
+          name: `${toPascalCase(singular(value.type || ""))}`,
         };
       }
       return {
-        path: `@/models/${pascalCase(singular(value.ref || ""))}`,
-        name: `${pascalCase(singular(value.ref || ""))}`,
+        path: `@/models/${toPascalCase(singular(value.ref || ""))}`,
+        name: `${toPascalCase(singular(value.ref || ""))}`,
       };
     });
   }

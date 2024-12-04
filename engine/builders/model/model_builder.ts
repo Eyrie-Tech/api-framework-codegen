@@ -1,12 +1,12 @@
-import type { Project } from "npm:ts-morph";
+import type { Project } from "ts-morph";
 import type { Model } from "../../../types/model.d.ts";
 import { NameBuilder } from "../../../utils/name_builder.ts";
-import { Builder } from "../builder.ts";
+import { TSBuilder } from "../builder.ts";
 
 /**
  * The model builder handles generating model definitions based off a parsed OpenAPI spec
  */
-export class ModelBuilder extends Builder {
+export class ModelBuilder extends TSBuilder {
   #project: Project;
 
   constructor(project: Project) {
@@ -37,17 +37,20 @@ export class ModelBuilder extends Builder {
       namedImports: [{ name: modelImport.name }],
     })));
 
-    sourceFile.addInterface({
+    sourceFile.addClass({
       isExported: true,
       name: NameBuilder({
         name: model.name,
         kind: "className",
       }),
-      properties: model.fields.map((prop) => ({
-        name: prop.name,
-        type: prop.type,
-        hasQuestionToken: prop.nullable,
-      })),
+      properties: model.fields.map((prop) => {
+        return {
+          name: prop.name,
+          type: prop.type,
+          hasQuestionToken: prop.nullable,
+          hasExclamationToken: !prop.nullable,
+        };
+      }),
     });
 
     await sourceFile.save();

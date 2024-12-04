@@ -12,10 +12,10 @@ export interface Controller {
     name: string;
     path: string;
   }[];
-  functions: {
+  methods: {
     type: string;
     name: string;
-    arguments?: {
+    parameters?: {
       body?: {
         name: string;
         type: string;

@@ -1,7 +1,7 @@
-import { camelCase, pascalCase } from "https://deno.land/x/case@2.2.0/mod.ts";
+import { toCamelCase, toPascalCase } from "@std/text";
 import { singular } from "https://deno.land/x/deno_plural@2.0.0/mod.ts";
-import { Ajv, type ValidateFunction } from "npm:ajv";
-import type { OpenAPIV3 } from "npm:openapi-types";
+import { Ajv, type ValidateFunction } from "ajv";
+import type { OpenAPIV3 } from "openapi-types";
 import serviceSchema from "../../schemas/service.json" with {
   type: "json",
 };
@@ -41,22 +41,22 @@ export class ServiceParser extends Parser {
     pathItem: OpenAPIV3.PathItemObject,
     path: string,
   ): Service {
-    const functions = this.#compileFunctions(pathItem, path);
-    const serviceName = pascalCase(
+    const methods = this.#compileMethods(pathItem, path);
+    const serviceName = toPascalCase(
       singular(this.#extractServiceName(path)),
     );
 
     if (this.#serviceStore.has(serviceName)) {
-      return this.#mergeWithExistingService(serviceName, functions);
+      return this.#mergeWithExistingService(serviceName, methods);
     } else {
-      return this.#createNewService(serviceName, functions);
+      return this.#createNewService(serviceName, methods);
     }
   }
 
-  #compileFunctions(
+  #compileMethods(
     pathItem: OpenAPIV3.PathItemObject,
     path: string,
-  ): Service["functions"] {
+  ): Service["methods"] {
     return Object.entries(pathItem)
       .filter(([method]) =>
         ["get", "post", "put", "delete", "patch"].includes(method)
@@ -66,17 +66,17 @@ export class ServiceParser extends Parser {
           return {
             type: method,
             name: "operationId" in operation ? operation.operationId : "",
-            arguments: this.#generateArguments(operation),
+            parameters: this.#generateParameters(operation),
             url: path,
             contentType: this.#extractContentType(operation.responses),
           };
         }
 
         return {};
-      }) as Service["functions"];
+      }) as Service["methods"];
   }
 
-  #generateArguments(
+  #generateParameters(
     operation: OpenAPIV3.OperationObject,
   ): {
     params?: unknown[];
@@ -92,7 +92,7 @@ export class ServiceParser extends Parser {
         if ("name" in parameter) {
           return {
             in: parameter.in,
-            name: camelCase(singular(parameter.name)),
+            name: toCamelCase(singular(parameter.name)),
             required: parameter.required,
           };
         }
@@ -107,7 +107,7 @@ export class ServiceParser extends Parser {
         const schema = content[contentType].schema as OpenAPIV3.ReferenceObject;
         if (schema.$ref) {
           args.body = [{
-            name: camelCase(
+            name: toCamelCase(
               singular(schema.$ref.split("/").pop()?.toString() ?? ""),
             ),
             type: `${schema.$ref.split("/").pop()}`,
@@ -139,36 +139,36 @@ export class ServiceParser extends Parser {
 
   #mergeWithExistingService(
     serviceName: string,
-    newFunctions: Service["functions"],
+    newMethods: Service["methods"],
   ): Service {
     const existingService = this.#serviceStore.get(serviceName)!;
     return {
       ...existingService,
-      imports: this.#generateImports(existingService.functions),
-      functions: [
-        ...(existingService.functions),
-        ...newFunctions,
+      imports: this.#generateImports(existingService.methods),
+      methods: [
+        ...(existingService.methods),
+        ...newMethods,
       ],
     };
   }
 
   #createNewService(
     serviceName: string,
-    functions: Service["functions"],
+    methods: Service["methods"],
   ): Service {
     return {
       name: serviceName,
       description: "",
-      functions,
-      imports: this.#generateImports(functions),
+      methods,
+      imports: this.#generateImports(methods),
     };
   }
 
-  #generateImports(serviceFunctions: Service["functions"]): Service["imports"] {
-    const allServiceImports = serviceFunctions.flatMap((serviceFunction) => {
-      return serviceFunction.arguments?.body?.map((serviceBody) => ({
-        path: `@/models/${pascalCase(singular(serviceBody.name))}`,
-        name: `${pascalCase(singular(serviceBody.name))}`,
+  #generateImports(serviceMethods: Service["methods"]): Service["imports"] {
+    const allServiceImports = serviceMethods.flatMap((serviceMethod) => {
+      return serviceMethod.parameters?.body?.map((serviceBody) => ({
+        path: `@/models/${toPascalCase(singular(serviceBody.name))}`,
+        name: `${toPascalCase(singular(serviceBody.name))}`,
       })) || [];
     }) || [];
 
@@ -182,8 +182,8 @@ export class ServiceParser extends Parser {
           return serviceImports;
         } else {
           serviceImports.push({
-            path: `@/models/${pascalCase(singular(currentImport.name))}`,
-            name: `${pascalCase(singular(currentImport.name))}`,
+            path: `@/models/${toPascalCase(singular(currentImport.name))}`,
+            name: `${toPascalCase(singular(currentImport.name))}`,
           });
         }
         return serviceImports;

@@ -1,4 +1,4 @@
-import type { OpenAPIV3 } from "npm:openapi-types";
+import type { OpenAPIV3 } from "openapi-types";
 
 /**
  * A parser ingests an OpenAPI spec and stores these generations to stores

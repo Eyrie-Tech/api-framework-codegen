@@ -1,4 +1,4 @@
-import { IndentationText, Project, QuoteKind } from "npm:ts-morph";
+import { IndentationText, Project, QuoteKind } from "ts-morph";
 import type { Controller } from "../types/controller.d.ts";
 import type { Model } from "../types/model.d.ts";
 import type { Service } from "../types/service.d.ts";
