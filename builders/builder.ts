@@ -1,8 +1,8 @@
 import { toCamelCase } from "@std/text/to-camel-case";
 import type { OptionalKind, ParameterDeclarationStructure } from "ts-morph";
-import type { Controller } from "../../types/controller.d.ts";
-import type { Model } from "../../types/model.d.ts";
-import type { Service } from "../../types/service.d.ts";
+import type { Controller } from "../types/controller.d.ts";
+import type { Model } from "../types/model.d.ts";
+import type { Service } from "../types/service.d.ts";
 
 /**
  * A builder takes in a constructed OpenAPI spec definition and perform the final output of the project structure

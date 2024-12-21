@@ -1,6 +1,6 @@
 import type { Project } from "ts-morph";
-import type { Controller } from "../../../types/controller.d.ts";
-import { NameBuilder } from "../../../utils/name_builder.ts";
+import type { Controller } from "../../types/controller.d.ts";
+import { NameBuilder } from "../../utils/name_builder.ts";
 import { TSBuilder } from "../builder.ts";
 
 /**

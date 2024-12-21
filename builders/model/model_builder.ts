@@ -1,6 +1,6 @@
 import type { Project } from "ts-morph";
-import type { Model } from "../../../types/model.d.ts";
-import { NameBuilder } from "../../../utils/name_builder.ts";
+import type { Model } from "../../types/model.d.ts";
+import { NameBuilder } from "../../utils/name_builder.ts";
 import { TSBuilder } from "../builder.ts";
 
 /**
