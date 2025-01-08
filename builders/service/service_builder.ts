@@ -1,4 +1,8 @@
-import type { Project } from "ts-morph";
+import type {
+  OptionalKind,
+  ParameterDeclarationStructure,
+  Project,
+} from "ts-morph";
 import type { Service } from "../../types/service.d.ts";
 import { NameBuilder } from "../../utils/name_builder.ts";
 import { TSBuilder } from "../builder.ts";
@@ -18,38 +22,98 @@ export class ServiceBuilder extends TSBuilder {
    * @param service A defined service definition used for the final generation
    */
   public async build(service: Service): Promise<void> {
-    const sourceFile = this.#project.createSourceFile(
-      `lib/services/${
-        NameBuilder({
+    try {
+      const sourceFile = this.#project.createSourceFile(
+        `lib/services/${
+          NameBuilder({
+            name: service.name,
+            type: "Service",
+            extension: "ts",
+            kind: "extension",
+          })
+        }`,
+        "",
+        { overwrite: false },
+      );
+
+      sourceFile.addClass({
+        decorators: [{
+          name: "Service()",
+        }],
+        isExported: true,
+        name: NameBuilder({
           name: service.name,
           type: "Service",
-          extension: "ts",
-          kind: "extension",
-        })
-      }`,
-      "",
-      { overwrite: true },
-    );
+          kind: "className",
+        }),
+        methods: [
+          ...service.methods.map((method) => ({
+            name: method.name,
+            parameters: this.#buildRequestParamsWithContext(
+              method.parameters?.body,
+            ),
+          })),
+          {
+            name: "register",
+            parameters: [],
+            returnType: "InjectableRegistration",
+            statements: `return { dependencies: [${
+              service.imports.filter((i) => i.name.endsWith("Service")).map((
+                impor,
+              ) => (`{class: ${impor.name}}`))
+            }] }`,
+          },
+        ],
+      });
 
-    sourceFile.addClass({
-      isExported: true,
-      name: NameBuilder({
-        name: service.name,
-        type: "Service",
-        kind: "className",
-      }),
-      methods: service.methods.map((method) => ({
-        name: method.name,
-        parameters: this.buildMethodParameters(method.parameters),
-      })),
-    });
+      sourceFile.addImportDeclarations([
+        ...service.imports.map((serviceImport) => ({
+          moduleSpecifier: `${serviceImport.path}.ts`,
+          isTypeOnly: true,
+          namedImports: [{ name: serviceImport.name }],
+        })),
+        {
+          moduleSpecifier: "@eyrie/app",
+          namedImports: [
+            {
+              isTypeOnly: true,
+              name: "InjectableRegistration",
+            },
+            {
+              name: "Service",
+            },
+          ],
+        },
+      ]);
 
-    sourceFile.addImportDeclarations(service.imports.map((serviceImport) => ({
-      moduleSpecifier: `${serviceImport.path}.ts`,
-      isTypeOnly: true,
-      namedImports: [{ name: serviceImport.name }],
-    })));
+      await sourceFile.save();
+    } catch {
+      return;
+    }
+  }
 
-    await sourceFile.save();
+  #buildRequestParamsWithContext(
+    body: { name: string; type: string }[] | undefined,
+  ): OptionalKind<ParameterDeclarationStructure>[] {
+    if (body?.length) {
+      return [{
+        name: "context",
+        type: "unknown",
+      }, {
+        name: "params",
+        type: "unknown",
+      }, {
+        name: "body",
+        type: body[0]?.type,
+      }];
+    }
+
+    return [{
+      name: "context",
+      type: "unknown",
+    }, {
+      name: "params",
+      type: "unknown",
+    }];
   }
 }

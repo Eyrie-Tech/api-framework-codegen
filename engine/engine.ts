@@ -5,6 +5,7 @@ import type { Service } from "../types/service.d.ts";
 import { ControllerBuilder } from "../builders/controller/controller_builder.ts";
 import { ModelBuilder } from "../builders/model/model_builder.ts";
 import { ServiceBuilder } from "../builders/service/service_builder.ts";
+import { BootStrap } from "./builders/bootstrap/bootstrap.ts";
 
 /**
  * The engine takes a parsed OpenAPI spec and delegates to the builders to construct the final project structure
@@ -38,6 +39,7 @@ export class Engine {
       ...Array.from(controllers.values()).map((controller) =>
         new ControllerBuilder(this.#project).build(controller)
       ),
+      [new BootStrap(this.#project).build()],
     ]);
   }
 }

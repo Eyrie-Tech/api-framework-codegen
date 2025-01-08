@@ -39,45 +39,45 @@ tags:
     description: Operations about user
 paths:
   /pet:
-    put:
-      tags:
-        - pet
-      summary: Update an existing pet
-      description: Update an existing pet by Id
-      operationId: updatePet
-      requestBody:
-        description: Update an existent pet in the store
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Pet"
-          application/xml:
-            schema:
-              $ref: "#/components/schemas/Pet"
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: "#/components/schemas/Pet"
-        required: true
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Pet"
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/Pet"
-        "400":
-          description: Invalid ID supplied
-        "404":
-          description: Pet not found
-        "422":
-          description: Validation exception
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
+    # put:
+    #   tags:
+    #     - pet
+    #   summary: Update an existing pet
+    #   description: Update an existing pet by Id
+    #   operationId: updatePet
+    #   requestBody:
+    #     description: Update an existent pet in the store
+    #     content:
+    #       application/json:
+    #         schema:
+    #           $ref: "#/components/schemas/Pet"
+    #       application/xml:
+    #         schema:
+    #           $ref: "#/components/schemas/Pet"
+    #       application/x-www-form-urlencoded:
+    #         schema:
+    #           $ref: "#/components/schemas/Pet"
+    #     required: true
+    #   responses:
+    #     "200":
+    #       description: Successful operation
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: "#/components/schemas/Pet"
+    #         application/xml:
+    #           schema:
+    #             $ref: "#/components/schemas/Pet"
+    #     "400":
+    #       description: Invalid ID supplied
+    #     "404":
+    #       description: Pet not found
+    #     "422":
+    #       description: Validation exception
+    #   security:
+    #     - petstore_auth:
+    #         - write:pets
+    #         - read:pets
     post:
       tags:
         - pet
@@ -112,6 +112,33 @@ paths:
         "422":
           description: Validation exception
       security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+    get:
+      tags:
+        - pet
+      summary: Find all pets
+      description: Returns all pets
+      operationId: getPets
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Pet"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Pet"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Pet not found
+      security:
+        - api_key: []
         - petstore_auth:
             - write:pets
             - read:pets
@@ -257,33 +284,33 @@ paths:
         - petstore_auth:
             - write:pets
             - read:pets
-    delete:
-      tags:
-        - pet
-      summary: Deletes a pet
-      description: delete a pet
-      operationId: deletePet
-      parameters:
-        - name: api_key
-          in: header
-          description: ""
-          required: false
-          schema:
-            type: string
-        - name: petId
-          in: path
-          description: Pet id to delete
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        "400":
-          description: Invalid pet value
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
+    # delete:
+    #   tags:
+    #     - pet
+    #   summary: Deletes a pet
+    #   description: delete a pet
+    #   operationId: deletePet
+    #   parameters:
+    #     - name: api_key
+    #       in: header
+    #       description: ""
+    #       required: false
+    #       schema:
+    #         type: string
+    #     - name: petId
+    #       in: path
+    #       description: Pet id to delete
+    #       required: true
+    #       schema:
+    #         type: integer
+    #         format: int64
+    #   responses:
+    #     "400":
+    #       description: Invalid pet value
+    #   security:
+    #     - petstore_auth:
+    #         - write:pets
+    #         - read:pets
   /pet/{petId}/uploadImage:
     post:
       tags:
