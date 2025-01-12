@@ -1,11 +1,11 @@
+import { toPascalCase } from "@std/text";
 import { Ajv, type ValidateFunction } from "ajv";
+import { singular } from "https://deno.land/x/deno_plural@2.0.0/mod.ts";
 import type { OpenAPIV3 } from "openapi-types";
-import type { Model } from "../../types/model.d.ts";
 import model from "../../schemas/model.json" with { type: "json" };
 import type { ModelStore } from "../../stores/model/model.ts";
+import type { Model } from "../../types/model.d.ts";
 import { Parser } from "../parser.ts";
-import { toPascalCase } from "@std/text";
-import { singular } from "https://deno.land/x/deno_plural@2.0.0/mod.ts";
 
 type BaseField = {
   name: string;

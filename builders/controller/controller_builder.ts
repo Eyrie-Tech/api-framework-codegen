@@ -1,4 +1,3 @@
-import { toPascalCase } from "@std/text/to-pascal-case";
 import type { Project } from "ts-morph";
 import type { Controller } from "../../types/controller.d.ts";
 import { NameBuilder } from "../../utils/name_builder.ts";
@@ -48,7 +47,7 @@ export class ControllerBuilder extends TSBuilder {
           { name: "InjectableRegistration", isTypeOnly: true },
           { name: "Context", isTypeOnly: true },
           ...new Set(
-            controller.methods.map((method) => toPascalCase(method.type)),
+            controller.methods.map((method) => method.type),
           ),
         ],
       },
@@ -70,7 +69,7 @@ export class ControllerBuilder extends TSBuilder {
       }],
       methods: [
         ...controller.methods.map((method) =>
-          this.buildMethod(controller, method)
+          this.#buildMethod(controller, method)
         ),
         {
           name: "register",
@@ -94,7 +93,7 @@ export class ControllerBuilder extends TSBuilder {
    * @param controller The controller definition.
    * @param method The method definition.
    */
-  private buildMethod(
+  #buildMethod(
     controller: Controller,
     method: Controller["methods"][number],
   ) {
@@ -114,7 +113,7 @@ export class ControllerBuilder extends TSBuilder {
         ...this.#addMethodBody(method.parameters?.body),
       ],
       decorators: [{
-        name: toPascalCase(method.type),
+        name: method.type,
         arguments: [`{ description: '', path: "${path}" }`],
       }],
     };

@@ -62,15 +62,15 @@ export class ServiceBuilder extends TSBuilder {
         }),
         methods: [
           ...service.methods.map((method) =>
-            this.buildMethod(method, service.name)
+            this.#buildMethod(method, service.name)
           ),
-          this.buildRegisterMethod(service),
+          this.#buildRegisterMethod(service),
         ],
       });
 
       await sourceFile.save();
     } catch {
-      console.info(`${service.name} already exists, skipping...`);
+      return;
     }
   }
 
@@ -79,13 +79,13 @@ export class ServiceBuilder extends TSBuilder {
    * @param method The method definition.
    * @param serviceName The name of the service.
    */
-  private buildMethod(
+  #buildMethod(
     method: Service["methods"][number],
     serviceName: string,
   ) {
     return {
       name: method.name,
-      parameters: this.buildRequestParamsWithContext(method.parameters?.body),
+      parameters: this.#buildRequestParamsWithContext(method.parameters?.body),
       statements:
         `// TODO: Implement ${method.name} method logic for ${serviceName}`,
     };
@@ -95,7 +95,7 @@ export class ServiceBuilder extends TSBuilder {
    * Builds the register method for the service class.
    * @param service The service definition.
    */
-  private buildRegisterMethod(service: Service) {
+  #buildRegisterMethod(service: Service) {
     const dependencies = service.imports
       .filter((i) => i.name.endsWith("Service"))
       .map((impor) => `{ class: ${impor.name} }`)
@@ -113,7 +113,7 @@ export class ServiceBuilder extends TSBuilder {
    * Constructs the request parameters including context, params, and optionally body.
    * @param body The body parameter.
    */
-  private buildRequestParamsWithContext(
+  #buildRequestParamsWithContext(
     body: { name: string; type: string }[] | undefined,
   ): OptionalKind<ParameterDeclarationStructure>[] {
     const params = [
