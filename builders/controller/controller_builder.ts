@@ -1,10 +1,11 @@
+import { toPascalCase } from "@std/text/to-pascal-case";
 import type { Project } from "ts-morph";
 import type { Controller } from "../../types/controller.d.ts";
 import { NameBuilder } from "../../utils/name_builder.ts";
 import { TSBuilder } from "../builder.ts";
-import { toPascalCase } from "@std/text/to-pascal-case";
+
 /**
- * The controller builder handles generating controller definitions based off a parsed OpenAPI spec
+ * The ControllerBuilder class generates controller definitions based on a parsed OpenAPI spec.
  */
 export class ControllerBuilder extends TSBuilder {
   #project: Project;
@@ -15,46 +16,43 @@ export class ControllerBuilder extends TSBuilder {
   }
 
   /**
-   * @param controller A defined controller definition used for the final generation
+   * Builds a controller source file based on the provided controller definition.
+   * @param controller A defined controller used for the final generation.
    */
-  public async build(controller: Controller) {
+  public async build(controller: Controller): Promise<void> {
+    const fileName = NameBuilder({
+      name: controller.name,
+      type: "Controller",
+      extension: "ts",
+      kind: "extension",
+    });
+
     const sourceFile = this.#project.createSourceFile(
-      `lib/controllers/${
-        NameBuilder({
-          name: controller.name,
-          type: "Controller",
-          extension: "ts",
-          kind: "extension",
-        })
-      }`,
+      `lib/controllers/${fileName}`,
       "",
       { overwrite: true },
     );
 
-    sourceFile.addImportDeclarations(
-      [
-        ...controller.imports.map((controllerImport) => ({
-          moduleSpecifier: `${controllerImport.path}.ts`,
-          namedImports: [{ name: controllerImport.name }],
-        })),
-        {
-          moduleSpecifier: "@eyrie/app",
-          namedImports: [
-            { name: "Controller" },
-            {
-              name: "InjectableRegistration",
-              isTypeOnly: true,
-            },
-            {
-              name: "Context",
-              isTypeOnly: true,
-            },
-            { name: "Get" },
-            { name: "Post" },
-          ],
-        },
-      ],
-    );
+    sourceFile.addImportDeclarations([
+      ...controller.imports.map((controllerImport) => ({
+        moduleSpecifier: `${controllerImport.path}.ts`,
+        namedImports: [{
+          name: controllerImport.name,
+        }],
+        isTypeOnly: controllerImport.path.includes("@/models"),
+      })),
+      {
+        moduleSpecifier: "@eyrie/app",
+        namedImports: [
+          { name: "Controller" },
+          { name: "InjectableRegistration", isTypeOnly: true },
+          { name: "Context", isTypeOnly: true },
+          ...new Set(
+            controller.methods.map((method) => toPascalCase(method.type)),
+          ),
+        ],
+      },
+    ]);
 
     sourceFile.addClass({
       isExported: true,
@@ -71,43 +69,19 @@ export class ControllerBuilder extends TSBuilder {
         parameters: this.buildConstructorParameters(controller.imports),
       }],
       methods: [
-        ...controller.methods.map((method) => ({
-          name: method.name || "",
-          statements:
-            `return this.${controller.name.toLowerCase()}Service.${method.name}(${
-              this.#buildRequestParamsWithContext(method.parameters?.body)
-            })`,
-          parameters: [
-            {
-              name: "context",
-              type: "Context",
-            },
-            ...this.addMethodParams(),
-            ...this.addMethodBody(method.parameters?.body),
-          ],
-          decorators: [{
-            name: toPascalCase(method.type),
-            arguments: [
-              // TODO: Refactor this
-              `{description: '', path: "${
-                method.url.split(`/${controller.name.toLowerCase()}`).pop()
-                    ?.toString() === ""
-                  ? "/"
-                  : method.url.split(`/${controller.name.toLowerCase()}`).pop()
-                    ?.toString()
-              }"}`,
-            ],
-          }],
-        })),
+        ...controller.methods.map((method) =>
+          this.buildMethod(controller, method)
+        ),
         {
           name: "register",
           parameters: [],
           returnType: "InjectableRegistration",
           statements: `return { dependencies: [${
-            controller.imports.filter((i) => i.name.endsWith("Service")).map((
-              impor,
-            ) => (`{class: ${impor.name}}`))
-          }] }`,
+            controller.imports
+              .filter((impor) => impor.name.endsWith("Service"))
+              .map((impor) => `{ class: ${impor.name} }`)
+              .join(", ")
+          }] };`,
         },
       ],
     });
@@ -115,26 +89,62 @@ export class ControllerBuilder extends TSBuilder {
     await sourceFile.save();
   }
 
-  #buildRequestParamsWithContext(body: unknown) {
-    if (body) return "context, params, body";
+  /**
+   * Builds a method for the controller class.
+   * @param controller The controller definition.
+   * @param method The method definition.
+   */
+  private buildMethod(
+    controller: Controller,
+    method: Controller["methods"][number],
+  ) {
+    const methodName = method.name || "";
+    const path = method.url.split(`/${controller.name.toLowerCase()}`).pop() ||
+      "/";
 
-    return "context, params";
+    return {
+      name: methodName,
+      statements:
+        `return this.${controller.name.toLowerCase()}Service.${methodName}(${
+          this.#buildRequestParamsWithContext(method.parameters?.body)
+        })`,
+      parameters: [
+        { name: "context", type: "Context" },
+        ...this.#addMethodParams(),
+        ...this.#addMethodBody(method.parameters?.body),
+      ],
+      decorators: [{
+        name: toPascalCase(method.type),
+        arguments: [`{ description: '', path: "${path}" }`],
+      }],
+    };
   }
 
-  private addMethodBody(body?: { name: string; type: string }[]) {
-    if (body?.length) {
-      return [{
-        name: "body",
-        type: body[0]?.type,
-      }];
+  /**
+   * Constructs the request parameters including context, params, and optionally body.
+   * @param body The body parameter.
+   */
+  #buildRequestParamsWithContext(body: unknown): string {
+    return body ? "context, params, body" : "context, params";
+  }
+
+  /**
+   * Adds body parameter to the method if it exists.
+   * @param body The body parameter definition.
+   */
+  #addMethodBody(
+    body?: { name: string; type: string }[],
+  ): { name: string; type: string }[] {
+    if (body?.length && body[0]) {
+      return [{ name: "body", type: body[0].type }];
     }
     return [];
   }
 
-  private addMethodParams() {
-    return [{
-      name: "params",
-      type: "unknown",
-    }];
+  /**
+   * Adds params parameter to the method.
+   */
+  #addMethodParams(): { name: string; type: string }[] {
+    return [{ name: "params", type: "unknown" }];
   }
 }

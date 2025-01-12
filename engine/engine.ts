@@ -39,7 +39,9 @@ export class Engine {
       ...Array.from(controllers.values()).map((controller) =>
         new ControllerBuilder(this.#project).build(controller)
       ),
-      [new BootStrap(this.#project).build()],
+      [
+        new BootStrap(this.#project).build(controllers.values().toArray()),
+      ],
     ]);
   }
 }
