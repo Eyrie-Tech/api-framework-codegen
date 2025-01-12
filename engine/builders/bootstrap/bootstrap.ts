@@ -1,7 +1,7 @@
 import type { Project } from "ts-morph";
+import { TSBuilder } from "../../../builders/builder.ts";
 import type { Controller } from "../../../types/controller.d.ts";
 import { NameBuilder } from "../../../utils/name_builder.ts";
-import { TSBuilder } from "../builder.ts";
 
 export class BootStrap extends TSBuilder {
   #project: Project;
