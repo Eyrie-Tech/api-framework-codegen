@@ -6,7 +6,7 @@ import type { OpenAPIV3 } from "openapi-types";
 import controllerSchema from "../../schemas/controller.json" with {
   type: "json",
 };
-import type { ControllerStore } from "../../stores/controller/controller.ts";
+import type { Store } from "../../stores/store.ts";
 import type { Controller } from "../../types/controller.d.ts";
 import { NameBuilder } from "../../utils/name_builder.ts";
 import { Parser } from "../parser.ts";
@@ -17,9 +17,9 @@ import { Parser } from "../parser.ts";
 export class ControllerParser extends Parser {
   #ajv: Ajv = new Ajv();
   #validate: ValidateFunction<OpenAPIV3.Document>;
-  #controllerStore: ControllerStore;
+  #controllerStore: Store<Controller>;
 
-  constructor(controllerStore: ControllerStore) {
+  constructor(controllerStore: Store<Controller>) {
     super();
     this.#validate = this.#ajv.compile(controllerSchema);
     this.#controllerStore = controllerStore;

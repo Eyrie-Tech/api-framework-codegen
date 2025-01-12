@@ -5,7 +5,7 @@ import type { OpenAPIV3 } from "openapi-types";
 import serviceSchema from "../../schemas/service.json" with {
   type: "json",
 };
-import type { ServiceStore } from "../../stores/service/service.ts";
+import type { Store } from "../../stores/store.ts";
 import type { Service } from "../../types/service.d.ts";
 import { Parser } from "../parser.ts";
 
@@ -15,9 +15,9 @@ import { Parser } from "../parser.ts";
 export class ServiceParser extends Parser {
   #ajv: Ajv = new Ajv();
   #validate: ValidateFunction<OpenAPIV3.Document>;
-  #serviceStore: ServiceStore;
+  #serviceStore: Store<Service>;
 
-  constructor(serviceStore: ServiceStore) {
+  constructor(serviceStore: Store<Service>) {
     super();
     this.#validate = this.#ajv.compile(serviceSchema);
     this.#serviceStore = serviceStore;
