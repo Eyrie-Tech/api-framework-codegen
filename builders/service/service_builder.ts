@@ -2,6 +2,7 @@ import type {
   OptionalKind,
   ParameterDeclarationStructure,
   Project,
+  SourceFile,
 } from "ts-morph";
 import type { Service } from "../../types/service.d.ts";
 import { NameBuilder } from "../../utils/name_builder.ts";
@@ -34,7 +35,9 @@ export class ServiceBuilder extends TSBuilder {
       const sourceFile = this.#project.createSourceFile(
         `lib/services/${fileName}`,
         "",
-        { overwrite: false },
+        {
+          overwrite: false,
+        },
       );
 
       sourceFile.addImportDeclarations([
@@ -70,7 +73,7 @@ export class ServiceBuilder extends TSBuilder {
 
       await sourceFile.save();
     } catch {
-      return;
+      this.#handlePostServiceUpdates(fileName, service);
     }
   }
 
@@ -126,5 +129,85 @@ export class ServiceBuilder extends TSBuilder {
     }
 
     return params;
+  }
+
+  /**
+   * Adds a method to an already existing service. This method ensures service logic is not removed after generation
+   * @param service The service we are generating this method for
+   * @param existingMethods The methods that already exist on this service
+   * @param existingSourceFile The existing service file to write changes too
+   */
+  #addMethodToExistingService(
+    service: Service,
+    existingMethods: string[],
+    existingSourceFile: SourceFile | undefined,
+  ) {
+    service.methods.map((serviceMethod) => {
+      if (!existingMethods.includes(serviceMethod.name)) {
+        existingSourceFile?.getClass(NameBuilder({
+          name: service.name,
+          type: "Service",
+          kind: "className",
+        }))?.addMethod(
+          this.#buildMethod(serviceMethod, service.name),
+        );
+      }
+    });
+  }
+
+  /**
+   * Removes a method on an already existing service. This method ensures service logic is tidied upon schema changes
+   * @param service The service we are removing the method for
+   * @param existingMethods The methods that already exist on this service
+   * @param existingSourceFile The existing service file to write changes too
+   */
+  #removeMethodFromExistingService(
+    service: Service,
+    existingMethods: string[],
+    existingSourceFile: SourceFile | undefined,
+  ) {
+    existingMethods.map((existingMethod) => {
+      if (!service.methods.map((m) => m.name).includes(existingMethod)) {
+        existingSourceFile?.getClass(NameBuilder({
+          name: service.name,
+          type: "Service",
+          kind: "className",
+        }))?.getMethod(existingMethod)?.remove();
+      }
+    });
+  }
+
+  /**
+   * @param fileName The file to read current changes for
+   * @param service The service to write changes too
+   */
+  async #handlePostServiceUpdates(fileName: string, service: Service) {
+    this.#project.addSourceFileAtPath(`lib/services/${fileName}`);
+
+    const existingSourceFile = this.#project.getSourceFile(
+      `lib/services/${fileName}`,
+    );
+
+    const existingMethods: string[] = existingSourceFile?.getClasses()
+      .flatMap((selectedClass) =>
+        selectedClass.getMethods().map((selectedMethod) =>
+          selectedMethod.getName()
+        )
+      )
+      .filter((methodName) => methodName !== "register") as string[];
+
+    this.#addMethodToExistingService(
+      service,
+      existingMethods,
+      existingSourceFile,
+    );
+
+    this.#removeMethodFromExistingService(
+      service,
+      existingMethods,
+      existingSourceFile,
+    );
+
+    await existingSourceFile?.save();
   }
 }
