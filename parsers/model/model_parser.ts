@@ -3,7 +3,7 @@ import { Ajv, type ValidateFunction } from "ajv";
 import { singular } from "https://deno.land/x/deno_plural@2.0.0/mod.ts";
 import type { OpenAPIV3 } from "openapi-types";
 import model from "../../schemas/model.json" with { type: "json" };
-import type { ModelStore } from "../../stores/model/model.ts";
+import type { Store } from "../../stores/store.ts";
 import type { Model } from "../../types/model.d.ts";
 import { Parser } from "../parser.ts";
 
@@ -24,9 +24,9 @@ type BaseField = {
 export class ModelParser extends Parser {
   readonly #ajv: Ajv;
   readonly #validate: ValidateFunction<OpenAPIV3.Document>;
-  readonly #modelStore: ModelStore;
+  readonly #modelStore: Store<Model>;
 
-  constructor(modelStore: ModelStore) {
+  constructor(modelStore: Store<Model>) {
     super();
     this.#ajv = new Ajv({ allErrors: true });
     this.#validate = this.#ajv.compile(model);
