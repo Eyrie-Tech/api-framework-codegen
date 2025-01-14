@@ -72,7 +72,7 @@ export class ServiceBuilder extends TSBuilder {
       });
 
       await sourceFile.save();
-    } catch (e) {
+    } catch {
       this.#handlePostServiceUpdates(fileName, service);
     }
   }
