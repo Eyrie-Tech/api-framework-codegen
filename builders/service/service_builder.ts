@@ -72,7 +72,7 @@ export class ServiceBuilder extends TSBuilder {
       });
 
       await sourceFile.save();
-    } catch {
+    } catch (e) {
       this.#handlePostServiceUpdates(fileName, service);
     }
   }
@@ -156,28 +156,6 @@ export class ServiceBuilder extends TSBuilder {
   }
 
   /**
-   * Removes a method on an already existing service. This method ensures service logic is tidied upon schema changes
-   * @param service The service we are removing the method for
-   * @param existingMethods The methods that already exist on this service
-   * @param existingSourceFile The existing service file to write changes too
-   */
-  #removeMethodFromExistingService(
-    service: Service,
-    existingMethods: string[],
-    existingSourceFile: SourceFile | undefined,
-  ) {
-    existingMethods.map((existingMethod) => {
-      if (!service.methods.map((m) => m.name).includes(existingMethod)) {
-        existingSourceFile?.getClass(NameBuilder({
-          name: service.name,
-          type: "Service",
-          kind: "className",
-        }))?.getMethod(existingMethod)?.remove();
-      }
-    });
-  }
-
-  /**
    * A higher order function to encompass the logic related to carrying out post changes to an existing service
    * @param fileName The file to read current changes for
    * @param service The service to write changes too
@@ -198,12 +176,6 @@ export class ServiceBuilder extends TSBuilder {
       .filter((methodName) => methodName !== "register") as string[];
 
     this.#addMethodToExistingService(
-      service,
-      existingMethods,
-      existingSourceFile,
-    );
-
-    this.#removeMethodFromExistingService(
       service,
       existingMethods,
       existingSourceFile,
