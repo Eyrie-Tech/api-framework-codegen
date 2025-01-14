@@ -1,10 +1,11 @@
 import { IndentationText, Project, QuoteKind } from "ts-morph";
-import type { Controller } from "../types/controller.d.ts";
-import type { Model } from "../types/model.d.ts";
-import type { Service } from "../types/service.d.ts";
 import { ControllerBuilder } from "../builders/controller/controller_builder.ts";
 import { ModelBuilder } from "../builders/model/model_builder.ts";
 import { ServiceBuilder } from "../builders/service/service_builder.ts";
+import type { Controller } from "../types/controller.d.ts";
+import type { Model } from "../types/model.d.ts";
+import type { Service } from "../types/service.d.ts";
+import { BootStrap } from "./builders/bootstrap/bootstrap.ts";
 
 /**
  * The engine takes a parsed OpenAPI spec and delegates to the builders to construct the final project structure
@@ -38,6 +39,7 @@ export class Engine {
       ...Array.from(controllers.values()).map((controller) =>
         new ControllerBuilder(this.#project).build(controller)
       ),
+      [new BootStrap(this.#project).build(controllers.values().toArray())],
     ]);
   }
 }

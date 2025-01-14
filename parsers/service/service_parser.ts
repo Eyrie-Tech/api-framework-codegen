@@ -1,6 +1,6 @@
 import { toCamelCase, toPascalCase } from "@std/text";
-import { singular } from "https://deno.land/x/deno_plural@2.0.0/mod.ts";
 import { Ajv, type ValidateFunction } from "ajv";
+import { singular } from "https://deno.land/x/deno_plural@2.0.0/mod.ts";
 import type { OpenAPIV3 } from "openapi-types";
 import serviceSchema from "../../schemas/service.json" with {
   type: "json",

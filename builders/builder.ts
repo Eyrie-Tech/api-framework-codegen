@@ -9,7 +9,7 @@ import type { Service } from "../types/service.d.ts";
  */
 export abstract class TSBuilder {
   public abstract build(
-    resource: Controller | Service | Model,
+    resource: Controller | Controller[] | Service | Model,
   ): Promise<void>;
 
   protected buildMethodParameters(

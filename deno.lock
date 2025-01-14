@@ -1,35 +1,101 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@std/cli@^1.0.8": "1.0.9",
+    "jsr:@std/encoding@^1.0.5": "1.0.6",
+    "jsr:@std/fmt@^1.0.3": "1.0.3",
+    "jsr:@std/fs@^1.0.7": "1.0.8",
+    "jsr:@std/html@^1.0.3": "1.0.3",
+    "jsr:@std/http@^1.0.2": "1.0.12",
+    "jsr:@std/io@0.225": "0.225.0",
+    "jsr:@std/log@~0.224.5": "0.224.12",
+    "jsr:@std/media-types@^1.1.0": "1.1.0",
+    "jsr:@std/net@^1.0.4": "1.0.4",
     "jsr:@std/path@^1.0.2": "1.0.8",
-    "jsr:@std/text@^1.0.1": "1.0.8",
+    "jsr:@std/path@^1.0.8": "1.0.8",
+    "jsr:@std/streams@^1.0.8": "1.0.8",
+    "jsr:@std/text@^1.0.1": "1.0.9",
     "jsr:@std/yaml@*": "1.0.5",
     "npm:ajv@8.17.1": "8.17.1",
-    "npm:json-schema-to-typescript@*": "15.0.3",
+    "npm:inversify@^6.0.2": "6.2.1_reflect-metadata@0.2.2",
+    "npm:reflect-metadata@~0.2.2": "0.2.2",
     "npm:ts-morph@24.0.0": "24.0.0"
   },
   "jsr": {
+    "@std/cli@1.0.9": {
+      "integrity": "557e5865af000efbf3f737dcfea5b8ab86453594f4a9cd8d08c9fa83d8e3f3bc"
+    },
+    "@std/encoding@1.0.6": {
+      "integrity": "ca87122c196e8831737d9547acf001766618e78cd8c33920776c7f5885546069"
+    },
+    "@std/fmt@1.0.3": {
+      "integrity": "97765c16aa32245ff4e2204ecf7d8562496a3cb8592340a80e7e554e0bb9149f"
+    },
+    "@std/fs@1.0.8": {
+      "integrity": "161c721b6f9400b8100a851b6f4061431c538b204bb76c501d02c508995cffe0"
+    },
+    "@std/html@1.0.3": {
+      "integrity": "7a0ac35e050431fb49d44e61c8b8aac1ebd55937e0dc9ec6409aa4bab39a7988"
+    },
+    "@std/http@1.0.12": {
+      "integrity": "85246d8bfe9c8e2538518725b158bdc31f616e0869255f4a8d9e3de919cab2aa",
+      "dependencies": [
+        "jsr:@std/cli",
+        "jsr:@std/encoding",
+        "jsr:@std/fmt",
+        "jsr:@std/html",
+        "jsr:@std/media-types",
+        "jsr:@std/net",
+        "jsr:@std/path@^1.0.8",
+        "jsr:@std/streams"
+      ]
+    },
+    "@std/io@0.225.0": {
+      "integrity": "c1db7c5e5a231629b32d64b9a53139445b2ca640d828c26bf23e1c55f8c079b3"
+    },
+    "@std/log@0.224.12": {
+      "integrity": "d0f002f1340a11f28d482a7a9e1c904c26b8ff2c7dd4fe32175b3ece3e0b18c5",
+      "dependencies": [
+        "jsr:@std/fmt",
+        "jsr:@std/fs",
+        "jsr:@std/io"
+      ]
+    },
+    "@std/media-types@1.1.0": {
+      "integrity": "c9d093f0c05c3512932b330e3cc1fe1d627b301db33a4c2c2185c02471d6eaa4"
+    },
+    "@std/net@1.0.4": {
+      "integrity": "2f403b455ebbccf83d8a027d29c5a9e3a2452fea39bb2da7f2c04af09c8bc852"
+    },
     "@std/path@1.0.8": {
       "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
     },
-    "@std/text@1.0.8": {
-      "integrity": "40ba34caa095f393e78796e5eda37b8b4e2cc6cfd6f51f34658ad7487b1451e4"
+    "@std/streams@1.0.8": {
+      "integrity": "b41332d93d2cf6a82fe4ac2153b930adf1a859392931e2a19d9fabfb6f154fb3"
+    },
+    "@std/text@1.0.9": {
+      "integrity": "b2db4abc3e6ab93eb0280a0d5e126fd3fca80955bcc297ccaaf555e995eab747"
     },
     "@std/yaml@1.0.5": {
       "integrity": "71ba3d334305ee2149391931508b2c293a8490f94a337eef3a09cade1a2a2742"
     }
   },
   "npm": {
-    "@apidevtools/json-schema-ref-parser@11.7.2": {
-      "integrity": "sha512-4gY54eEGEstClvEkGnwVkTkrx0sqwemEFG5OSRRn3tD91XH0+Q8XIkYIfo7IwEWPpJZwILb9GUXeShtplRc/eA==",
+    "@inversifyjs/common@1.4.0": {
+      "integrity": "sha512-qfRJ/3iOlCL/VfJq8+4o5X4oA14cZSBbpAmHsYj8EsIit1xDndoOl0xKOyglKtQD4u4gdNVxMHx4RWARk/I4QA=="
+    },
+    "@inversifyjs/core@1.3.5_reflect-metadata@0.2.2": {
+      "integrity": "sha512-B4MFXabhNTAmrfgB+yeD6wd/GIvmvWC6IQ8Rh/j2C3Ix69kmqwz9pr8Jt3E+Nho9aEHOQCZaGmrALgtqRd+oEQ==",
       "dependencies": [
-        "@jsdevtools/ono",
-        "@types/json-schema",
-        "js-yaml"
+        "@inversifyjs/common",
+        "@inversifyjs/reflect-metadata-utils"
       ]
     },
-    "@jsdevtools/ono@7.1.3": {
-      "integrity": "sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg=="
+    "@inversifyjs/reflect-metadata-utils@0.2.4_reflect-metadata@0.2.2": {
+      "integrity": "sha512-u95rV3lKfG+NT2Uy/5vNzoDujos8vN8O18SSA5UyhxsGYd4GLQn/eUsGXfOsfa7m34eKrDelTKRUX1m/BcNX5w==",
+      "dependencies": [
+        "reflect-metadata"
+      ]
     },
     "@ts-morph/common@0.25.0": {
       "integrity": "sha512-kMnZz+vGGHi4GoHnLmMhGNjm44kGtKUXGnOvrKmMwAuvNjM/PgKVGfUnL7IDvK7Jb2QQ82jq3Zmp04Gy+r3Dkg==",
@@ -39,12 +105,6 @@
         "tinyglobby"
       ]
     },
-    "@types/json-schema@7.0.15": {
-      "integrity": "sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA=="
-    },
-    "@types/lodash@4.17.13": {
-      "integrity": "sha512-lfx+dftrEZcdBPczf9d0Qv0x+j/rfNCMuC6OcfXmO8gkfeNAY88PgKUbvG56whcN23gc27yenwF6oJZXGFpYxg=="
-    },
     "ajv@8.17.1": {
       "integrity": "sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==",
       "dependencies": [
@@ -53,9 +113,6 @@
         "json-schema-traverse",
         "require-from-string"
       ]
-    },
-    "argparse@2.0.1": {
-      "integrity": "sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q=="
     },
     "balanced-match@1.0.2": {
       "integrity": "sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw=="
@@ -72,8 +129,8 @@
     "fast-deep-equal@3.1.3": {
       "integrity": "sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q=="
     },
-    "fast-uri@3.0.3": {
-      "integrity": "sha512-aLrHthzCjH5He4Z2H9YZ+v6Ujb9ocRuW6ZzkJQOrTxleEijANq4v1TsaPaVG1PZcuurEzrLcWRyYBYXD5cEiaw=="
+    "fast-uri@3.0.5": {
+      "integrity": "sha512-5JnBCWpFlMo0a3ciDy/JckMzzv1U9coZrIhedq+HXxxUfDTAiS0LA8OKVao4G9BxmCVck/jtA5r3KAtRWEyD8Q=="
     },
     "fdir@6.4.2_picomatch@4.0.2": {
       "integrity": "sha512-KnhMXsKSPZlAhp7+IjUkRZKPb4fUyccpDrdFXbi4QL1qkmFh9kVY09Yox+n4MaOb3lHZ1Tv829C3oaaXoMYPDQ==",
@@ -81,40 +138,16 @@
         "picomatch"
       ]
     },
-    "is-extglob@2.1.1": {
-      "integrity": "sha512-SbKbANkN603Vi4jEZv49LeVJMn4yGwsbzZworEoyEiutsN3nJYdbO36zfhGJ6QEDpOZIFkDtnq5JRxmvl3jsoQ=="
-    },
-    "is-glob@4.0.3": {
-      "integrity": "sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg==",
+    "inversify@6.2.1_reflect-metadata@0.2.2": {
+      "integrity": "sha512-W6Xi0icXIiC48RWdT681+GlZVgAKmCrNTiP7hj4IVPFbcxHz+Jj8Gxz5qr/Az2cgcZMYdB8tKIr2e68LUi1LYQ==",
       "dependencies": [
-        "is-extglob"
-      ]
-    },
-    "js-yaml@4.1.0": {
-      "integrity": "sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==",
-      "dependencies": [
-        "argparse"
-      ]
-    },
-    "json-schema-to-typescript@15.0.3": {
-      "integrity": "sha512-iOKdzTUWEVM4nlxpFudFsWyUiu/Jakkga4OZPEt7CGoSEsAsUgdOZqR6pcgx2STBek9Gm4hcarJpXSzIvZ/hKA==",
-      "dependencies": [
-        "@apidevtools/json-schema-ref-parser",
-        "@types/json-schema",
-        "@types/lodash",
-        "is-glob",
-        "js-yaml",
-        "lodash",
-        "minimist",
-        "prettier",
-        "tinyglobby"
+        "@inversifyjs/common",
+        "@inversifyjs/core",
+        "reflect-metadata"
       ]
     },
     "json-schema-traverse@1.0.0": {
       "integrity": "sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug=="
-    },
-    "lodash@4.17.21": {
-      "integrity": "sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg=="
     },
     "minimatch@9.0.5": {
       "integrity": "sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow==",
@@ -122,17 +155,14 @@
         "brace-expansion"
       ]
     },
-    "minimist@1.2.8": {
-      "integrity": "sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA=="
-    },
     "path-browserify@1.0.1": {
       "integrity": "sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g=="
     },
     "picomatch@4.0.2": {
       "integrity": "sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg=="
     },
-    "prettier@3.4.2": {
-      "integrity": "sha512-e9MewbtFo+Fevyuxn/4rrcDAaq0IYxPGLvObpQjiZBMAzB9IGmzlnG9RZy3FFas+eBMu2vA0CszMeduow5dIuQ=="
+    "reflect-metadata@0.2.2": {
+      "integrity": "sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q=="
     },
     "require-from-string@2.0.2": {
       "integrity": "sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw=="
@@ -153,12 +183,47 @@
     }
   },
   "remote": {
+    "https://deno.land/std@0.200.0/assert/assert.ts": "9a97dad6d98c238938e7540736b826440ad8c1c1e54430ca4c4e623e585607ee",
+    "https://deno.land/std@0.200.0/assert/assertion_error.ts": "4d0bde9b374dfbcbe8ac23f54f567b77024fb67dbb1906a852d67fe050d42f56",
+    "https://deno.land/std@0.200.0/flags/mod.ts": "a5ac18af6583404f21ea03771f8816669d901e0ff4374020870334d6f61d73d5",
     "https://deno.land/x/deno_plural@2.0.0/mod.ts": "9473507398048cb24dbb37b3a220777106c69c28d573898648deb2bb84a7e131",
     "https://deno.land/x/deno_plural@2.0.0/src/denoPlural.ts": "975dd7a85d25b44de78276d7dce93606c2cbbaa48718f5e83ba35af9e823f6f3",
     "https://deno.land/x/deno_plural@2.0.0/src/mod.ts": "b9e42705558be387dbdd76e524b5940b09d7356ffb27a7f388d9a17084a7d9bc",
     "https://deno.land/x/deno_plural@2.0.0/src/rules/en.ts": "78baa1ea1bde89f23ff5080b6721b49c7e33f0abf8013f0a6b34ecba7ac7a63c",
     "https://deno.land/x/deno_plural@2.0.0/src/types.ts": "9382d30f8cb2c0875a9021fb152323587f905b4e71510dbccea25af7c854ee2e",
-    "https://deno.land/x/deno_plural@2.0.0/src/utils.ts": "d7db0793a17f48156ceb5a1a6efc6d25bea1c243e4ea02a7ccc411902ba26bf5"
+    "https://deno.land/x/deno_plural@2.0.0/src/utils.ts": "d7db0793a17f48156ceb5a1a6efc6d25bea1c243e4ea02a7ccc411902ba26bf5",
+    "https://deno.land/x/zod@v3.23.8/ZodError.ts": "528da200fbe995157b9ae91498b103c4ef482217a5c086249507ac850bd78f52",
+    "https://deno.land/x/zod@v3.23.8/errors.ts": "5285922d2be9700cc0c70c95e4858952b07ae193aa0224be3cbd5cd5567eabef",
+    "https://deno.land/x/zod@v3.23.8/external.ts": "a6cfbd61e9e097d5f42f8a7ed6f92f93f51ff927d29c9fbaec04f03cbce130fe",
+    "https://deno.land/x/zod@v3.23.8/helpers/enumUtil.ts": "54efc393cc9860e687d8b81ff52e980def00fa67377ad0bf8b3104f8a5bf698c",
+    "https://deno.land/x/zod@v3.23.8/helpers/errorUtil.ts": "7a77328240be7b847af6de9189963bd9f79cab32bbc61502a9db4fe6683e2ea7",
+    "https://deno.land/x/zod@v3.23.8/helpers/parseUtil.ts": "c14814d167cc286972b6e094df88d7d982572a08424b7cd50f862036b6fcaa77",
+    "https://deno.land/x/zod@v3.23.8/helpers/partialUtil.ts": "998c2fe79795257d4d1cf10361e74492f3b7d852f61057c7c08ac0a46488b7e7",
+    "https://deno.land/x/zod@v3.23.8/helpers/typeAliases.ts": "0fda31a063c6736fc3cf9090dd94865c811dfff4f3cb8707b932bf937c6f2c3e",
+    "https://deno.land/x/zod@v3.23.8/helpers/util.ts": "30c273131661ca5dc973f2cfb196fa23caf3a43e224cdde7a683b72e101a31fc",
+    "https://deno.land/x/zod@v3.23.8/index.ts": "d27aabd973613985574bc31f39e45cb5d856aa122ef094a9f38a463b8ef1a268",
+    "https://deno.land/x/zod@v3.23.8/locales/en.ts": "a7a25cd23563ccb5e0eed214d9b31846305ddbcdb9c5c8f508b108943366ab4c",
+    "https://deno.land/x/zod@v3.23.8/mod.ts": "ec6e2b1255c1a350b80188f97bd0a6bac45801bb46fc48f50b9763aa66046039",
+    "https://deno.land/x/zod@v3.23.8/types.ts": "1b172c90782b1eaa837100ebb6abd726d79d6c1ec336350c8e851e0fd706bf5c",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/application.ts": "aee530a24a2a4f99dabbdb87fd4bb368743691d126ab00c4955dfd9d255f1a8a",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/container.ts": "89160604bb36a463fb2b25ce9b4ef84190fe765f1f61548f31fd2d4dc06830d6",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/context.ts": "331f1b47517aa21284301c291d9e68800fa3adcc73cb39de8bdf65767a1b56df",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/delete_decorator.ts": "3cb0e00ed192798c6c0dbd371723846723a36e073a6553f99b19140db8d7baba",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/drivers/core_adapter.ts": "34275ba56ae346add60ff594d15f55048722deef2b55a623330393425a6ce89e",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/drivers/driver.ts": "bff97c03d89c8417fbb7ada0f33153f2cda2d41daf8d57f2c8b480113cd5b38f",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/get_decorator.ts": "abbea931b84d8be916907c5e06b2ed2b3582c772c08c5846d6ec0f6c76f97887",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/logger.ts": "e87e06dc90bfe67026ed2327e767bc1b85e7b496c4efcf51564c65a5144e364a",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/mod.ts": "63e6f748784f3ae042ef21a751b224feed918813190f19a14149b3132d15924b",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/model_builders.ts": "1188e005dcb4376c681ee74cd358043ea44c0cc09fec6435e4e0782c0b955145",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/model_decorators.ts": "525a7c0ec4d44db803776968809c604baa6bc3b6ada22c26b9c1ea0b0a99a691",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/post_decorator.ts": "426cfba3a9ae76713db1794a87abb7339d367c33950cf771b6971cdd93a864eb",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/put_decorator.ts": "e2342bf5bef3069948024c4474f60c3f5857608af18cc0166f3b5e2ca45fe3a0",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/registration.ts": "ea99fa4c36155e00cca8446747c8f407983e550793fab8d2636717b2a7d0a1b9",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/response.ts": "b45d8d30d279782fb8551000388255a377f2141f15f39e7c3ce18a015f94c38a",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/route_decorators.ts": "1389acbf2570a74f08a2353f585dabb8325fb6f6a47474bd45e8addf486b89c6",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/router.ts": "a267986995c6b0e1831549b2433e6877745f4c894bf53515508d270e1c0db92c",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/utils.ts": "91171b90c56db75b22d91649709d0305fa34b075b562c2572e4796e487664089",
+    "https://raw.githubusercontent.com/jonnydgreen/api-framework/refs/heads/docs/validation.ts": "4703fafe8161ba821da968b6417bb3ecbe58e5cdcc034a729bed7c0312d7ea7a"
   },
   "workspace": {
     "dependencies": [
@@ -171,7 +236,9 @@
       "jsr:@std/semver@^1.0.1",
       "jsr:@std/text@^1.0.1",
       "npm:ajv@8.17.1",
+      "npm:inversify@^6.0.2",
       "npm:openapi-types@12.1.3",
+      "npm:reflect-metadata@~0.2.2",
       "npm:ts-morph@24.0.0",
       "npm:yaml@2.5.1"
     ]

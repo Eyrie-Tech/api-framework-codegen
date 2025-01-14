@@ -66,7 +66,7 @@ export class ControllerParser extends Parser {
       .map(([method, operation]) => {
         if (typeof operation === "object" && "operationId" in operation) {
           return {
-            type: method,
+            type: toPascalCase(method),
             name: "operationId" in operation ? operation.operationId : "",
             parameters: this.#generateParameters(operation),
             url: path,

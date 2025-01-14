@@ -115,6 +115,33 @@ paths:
         - petstore_auth:
             - write:pets
             - read:pets
+    get:
+      tags:
+        - pet
+      summary: Find all pets
+      description: Returns all pets
+      operationId: getPets
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Pet"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Pet"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Pet not found
+      security:
+        - api_key: []
+        - petstore_auth:
+            - write:pets
+            - read:pets
   /pet/findByStatus:
     get:
       tags:
