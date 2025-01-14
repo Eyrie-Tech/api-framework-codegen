@@ -178,6 +178,7 @@ export class ServiceBuilder extends TSBuilder {
   }
 
   /**
+   * A higher order function to encompass the logic related to carrying out post changes to an existing service
    * @param fileName The file to read current changes for
    * @param service The service to write changes too
    */
