@@ -10,6 +10,7 @@ import type { Store } from "../../stores/store.ts";
 import type { Controller } from "../../types/controller.d.ts";
 import { NameBuilder } from "../../utils/name_builder.ts";
 import { Parser } from "../parser.ts";
+import { assert } from "https://deno.land/std@0.200.0/assert/assert.ts";
 
 /**
  * The parser that outputs a controller definition to be used by the controller builder
@@ -73,8 +74,11 @@ export class ControllerParser extends Parser {
             contentType: this.#extractContentType(operation.responses),
           };
         }
-
-        return {};
+        throw new Error(
+          `${
+            (operation as { summary: string }).summary
+          } is missing an operationId`,
+        );
       }) as Controller["methods"];
   }
 
