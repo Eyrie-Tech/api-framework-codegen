@@ -156,9 +156,6 @@ export class ServiceBuilder extends TSBuilder {
   }
 
   /**
-<<<<<<< Updated upstream
-   * A higher order function to encompass the logic related to carrying out post changes to an existing service
-=======
    * Removes a method on an already existing service. This method ensures service logic is tidied upon schema changes
    * @param service The service we are removing the method for
    * @param existingMethods The methods that already exist on this service
@@ -181,7 +178,6 @@ export class ServiceBuilder extends TSBuilder {
   }
 
   /**
->>>>>>> Stashed changes
    * @param fileName The file to read current changes for
    * @param service The service to write changes too
    */
@@ -206,15 +202,12 @@ export class ServiceBuilder extends TSBuilder {
       existingSourceFile,
     );
 
-<<<<<<< Updated upstream
-=======
     this.#removeMethodFromExistingService(
       service,
       existingMethods,
       existingSourceFile,
     );
 
->>>>>>> Stashed changes
     await existingSourceFile?.save();
   }
 }
