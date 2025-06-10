@@ -4,7 +4,7 @@ import { Ajv, type ValidateFunction } from "ajv";
 import { singular } from "https://deno.land/x/deno_plural@2.0.0/mod.ts";
 import type { OpenAPIV3 } from "openapi-types";
 import controllerSchema from "../../schemas/controller.json" with {
-  type: "json"
+  type: "json",
 };
 import type { Store } from "../../stores/store.ts";
 import type { Controller } from "../../types/controller.d.ts";
@@ -74,7 +74,8 @@ export class ControllerParser extends Parser {
           };
         }
         throw new Error(
-          `${(operation as { summary: string }).summary
+          `${
+            (operation as { summary: string }).summary
           } is missing an operationId`,
         );
       }) as Controller["methods"];
@@ -206,12 +207,13 @@ export class ControllerParser extends Parser {
             kind: "className",
             type: "Service",
           }),
-          path: `@/services/${toPascalCase(singular(NameBuilder({
-            kind: "className",
-            name: controllerName,
-            type: "Service",
-          })))
-            }`,
+          path: `@/services/${
+            toPascalCase(singular(NameBuilder({
+              kind: "className",
+              name: controllerName,
+              type: "Service",
+            })))
+          }`,
         }];
       },
       [],
