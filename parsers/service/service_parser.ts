@@ -8,7 +8,6 @@ import serviceSchema from "../../schemas/service.json" with {
 import type { Store } from "../../stores/store.ts";
 import type { Service } from "../../types/service.d.ts";
 import { Parser } from "../parser.ts";
-import { assert } from "https://deno.land/std@0.200.0/assert/assert.ts";
 
 /**
  * The parser that outputs a service definition to be used by the service builder
