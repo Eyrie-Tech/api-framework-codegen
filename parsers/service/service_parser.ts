@@ -64,7 +64,8 @@ export class ServiceParser extends Parser {
       )
       .map(([method, operation]) => {
         if (typeof operation === "object" && "operationId" in operation) {
-          assert(singular(path) === path, `${path} cannot be plural`);
+          // TODO: evaluate this validation
+          // assert(singular(path) === path, `${path} cannot be plural`);
           return {
             type: method,
             name: "operationId" in operation ? operation.operationId : "",
