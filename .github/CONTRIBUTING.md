@@ -18,7 +18,7 @@ Ensure the following are installed:
 To run checks such as type checking, linting etc, run the following in your
 terminal session:
 
-```bashell
+```shell
 deno task ok
 ```
 
@@ -27,7 +27,7 @@ deno task ok
 To run the tests including tests for the docs, run the following in your
 terminal session:
 
-```bashell
+```shell
 deno task test
 ```
 
@@ -36,7 +36,7 @@ deno task test
 Sometimes, you may want to run tests in watch mode to restart the tests upon
 file changes. In this case, run the following in your terminal session:
 
-```bashell
+```shell
 deno task test:watch
 ```
 
@@ -45,6 +45,6 @@ deno task test:watch
 To generate and view a coverage report, run the following in your terminal
 session:
 
-```bashell
+```shell
 deno task report
 ```
