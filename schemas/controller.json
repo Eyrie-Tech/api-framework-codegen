@@ -7,6 +7,12 @@
         "NotificationDefinitionController"
       ]
     },
+    "path": {
+      "type": "string",
+      "examples": [
+        "/applications"
+      ]
+    },
     "description": {
       "type": "string",
       "examples": [
@@ -107,6 +113,7 @@
   },
   "required": [
     "name",
+    "path",
     "description",
     "imports",
     "methods"

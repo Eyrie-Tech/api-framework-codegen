@@ -56,7 +56,7 @@ export class ControllerBuilder extends TSBuilder {
     sourceFile.addClass({
       isExported: true,
       decorators: [{
-        arguments: [`"/${controller.name}"`],
+        arguments: [`"${controller.path}"`],
         name: "Controller",
       }],
       name: NameBuilder({
@@ -98,8 +98,7 @@ export class ControllerBuilder extends TSBuilder {
     method: Controller["methods"][number],
   ) {
     const methodName = method.name || "";
-    const path = method.url.split(`/${controller.name.toLowerCase()}`).pop() ||
-      "/";
+    const path = method.url;
 
     return {
       name: methodName,

@@ -7,6 +7,7 @@
 
 export interface Controller {
   name: string;
+  path: string;
   description: string;
   imports: {
     name: string;
