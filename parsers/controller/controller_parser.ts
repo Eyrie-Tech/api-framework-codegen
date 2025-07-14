@@ -194,15 +194,30 @@ export class ControllerParser extends Parser {
         })) || [];
       }) || [];
 
+    if (allControllerImports.length === 0) {
+      return [{
+        name: NameBuilder({
+          name: controllerName,
+          kind: "className",
+          type: "Service",
+        }),
+        path: `@/services/${
+          toPascalCase(singular(NameBuilder({
+            kind: "className",
+            name: controllerName,
+            type: "Service",
+          })))
+        }`,
+      }];
+    }
+
     return allControllerImports.reduce(
       (controllerImports: Controller["imports"], currentImport) => {
         if (
-          controllerImports.find((controllerImport) =>
+          !controllerImports.find((controllerImport) =>
             controllerImport.name === currentImport.name
           )
         ) {
-          return controllerImports;
-        } else {
           controllerImports.push({
             path: `@/models/${toPascalCase(singular(currentImport.name))}`,
             name: `${toPascalCase(singular(currentImport.name))}`,
