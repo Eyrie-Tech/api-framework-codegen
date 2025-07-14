@@ -51,6 +51,7 @@ export class ServiceBuilder extends TSBuilder {
           namedImports: [
             { name: "Service" },
             { name: "InjectableRegistration", isTypeOnly: true },
+            { name: "Context", isTypeOnly: true },
           ],
         },
       ]);
@@ -120,7 +121,7 @@ export class ServiceBuilder extends TSBuilder {
     body: { name: string; type: string }[] | undefined,
   ): OptionalKind<ParameterDeclarationStructure>[] {
     const params = [
-      { name: "context", type: "unknown" },
+      { name: "context", type: "Context" },
       { name: "params", type: "unknown" },
     ];
 

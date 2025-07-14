@@ -1,7 +1,7 @@
 import { toCamelCase } from "@std/text/to-camel-case";
 import { toPascalCase } from "@std/text/to-pascal-case";
 import { Ajv, type ValidateFunction } from "ajv";
-import { singular } from "https://deno.land/x/deno_plural@2.0.0/mod.ts";
+import { plural, singular } from "https://deno.land/x/deno_plural@2.0.0/mod.ts";
 import type { OpenAPIV3 } from "openapi-types";
 import controllerSchema from "../../schemas/controller.json" with {
   type: "json",
@@ -43,21 +43,22 @@ export class ControllerParser extends Parser {
     pathItem: OpenAPIV3.PathItemObject,
     path: string,
   ): Controller {
-    const methods = this.#compileMethods(pathItem, path);
     const controllerName = toPascalCase(
       singular(this.#extractControllerName(path)),
     );
+    const methods = this.#compileMethods(pathItem, path, controllerName);
 
     if (this.#controllerStore.has(controllerName)) {
       return this.#mergeWithExistingController(controllerName, methods);
     }
 
-    return this.#createNewController(controllerName, methods);
+    return this.#createNewController(controllerName, methods, path);
   }
 
   #compileMethods(
     pathItem: OpenAPIV3.PathItemObject,
     path: string,
+    controllerName: string,
   ): Controller["methods"] {
     return Object.entries(pathItem)
       .filter(([method]) =>
@@ -65,11 +66,15 @@ export class ControllerParser extends Parser {
       )
       .map(([method, operation]) => {
         if (typeof operation === "object" && "operationId" in operation) {
+          const url =
+            path.split(`/${plural(controllerName.toLowerCase())}`)[1] ||
+            "/";
+
           return {
             type: toPascalCase(method),
             name: "operationId" in operation ? operation.operationId : "",
             parameters: this.#generateParameters(operation),
-            url: path,
+            url,
             contentType: this.#extractContentType(operation.responses),
           };
         }
@@ -166,9 +171,11 @@ export class ControllerParser extends Parser {
   #createNewController(
     controllerName: string,
     methods: Controller["methods"],
+    path: string,
   ): Controller {
     return {
       name: controllerName,
+      path,
       description: "",
       methods,
       imports: this.#generateImports(methods, controllerName),

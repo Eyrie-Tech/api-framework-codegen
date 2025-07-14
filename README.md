@@ -38,5 +38,5 @@ Check out the contribution guidelines [here](.github/CONTRIBUTING.md)
 ## How to use the CLI tool
 
 ```bash
-deno run -a main.ts --spec spec.yaml ## Replace Spec.yaml with your openAPI spec file
+deno run -A main.ts --spec spec.yaml ## Replace Spec.yaml with your openAPI spec file
 ```
