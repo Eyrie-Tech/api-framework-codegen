@@ -33,10 +33,10 @@ Check out the contribution guidelines [here](.github/CONTRIBUTING.md)
 
 ## License
 
-<!-- TODO: define -->
+[Licence](https://github.com/Eyrie-Tech/api-framework-codegen/blob/main/LICENSE)
 
 ## How to use the CLI tool
 
 ```bash
-deno run -a main.ts --spec spec.yaml ## Replace Spec.yaml with your openAPI spec file
+deno run -A main.ts --spec spec.yaml ## Replace Spec.yaml with your openAPI spec file
 ```
