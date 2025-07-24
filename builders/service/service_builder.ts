@@ -47,7 +47,7 @@ export class ServiceBuilder extends TSBuilder {
           namedImports: [{ name: serviceImport.name }],
         })),
         {
-          moduleSpecifier: "@eyrie/app",
+          moduleSpecifier: "@eyrie/framework",
           namedImports: [
             { name: "Service" },
             { name: "InjectableRegistration", isTypeOnly: true },
