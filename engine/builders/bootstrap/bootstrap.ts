@@ -24,7 +24,7 @@ export class BootStrap extends TSBuilder {
     sourceFile.addImportDeclarations([
       {
         namedImports: [{ name: "Application" }],
-        moduleSpecifier: "@eyrie/app",
+        moduleSpecifier: "@eyrie/framework",
       },
       ...controllers.map((controller) => ({
         namedImports: [{

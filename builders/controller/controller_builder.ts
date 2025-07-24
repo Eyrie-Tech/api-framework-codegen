@@ -41,7 +41,7 @@ export class ControllerBuilder extends TSBuilder {
         isTypeOnly: controllerImport.path.includes("@/models"),
       })),
       {
-        moduleSpecifier: "@eyrie/app",
+        moduleSpecifier: "@eyrie/framework",
         namedImports: [
           { name: "Controller" },
           { name: "InjectableRegistration", isTypeOnly: true },
